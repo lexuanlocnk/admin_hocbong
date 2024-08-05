@@ -1,0 +1,38 @@
+.ant-row .ant-form-item-row {
+  display: flex;
+}
+
+.ant-form-item {
+  margin-top: 32px;
+}
+
+.ck-content {
+  min-height: 200px;
+  max-height: 600px;
+}
+.ant-tooltip{
+  display: none;
+}
+.image.is-5by4 {
+  padding-top: 80%;
+}
+.image.is-5by4 img{
+  height: 100%;
+  width: 100%;
+}
+.image.is-5by4 img{
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.image {
+  display: block;
+  position: relative;
+}
+.image img {
+  display: block;
+  height: auto;
+  width: 100%;
+}

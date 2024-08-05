@@ -1,0 +1,10 @@
+.ant-card-head-title {
+  font-size: 24px;
+  color: white;
+  font-weight: 600;
+}
+
+h2 {
+  display: flex;
+  justify-content: flex-start;
+}
