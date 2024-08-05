@@ -41,12 +41,9 @@ function AddAdmin() {
         if (token) {
           headers.Authorization = `Bearer ${token}`;
         }
-        const res = await axios.get(
-          "http://adminhocbong.vitinhnguyenkim.vn/api/admin/get-permission",
-          {
-            headers: headers,
-          }
-        );
+        const res = await axios.get(`${config.host}/admin/get-permission`, {
+          headers: headers,
+        });
         const data = res.data;
 
         setPermissionsTotal(data);

@@ -60,6 +60,11 @@ const EditBanner = React.lazy(() =>
   import("./views/banner/banner/EditBanner.js")
 );
 
+// Post
+const Post = React.lazy(() => import("./views/post/Post.jsx"));
+const AddPost = React.lazy(() => import("./views/post/AddPost.jsx"));
+const EditPost = React.lazy(() => import("./views/post/EditPost.jsx"));
+
 const routes = [
   { path: "/", exact: true, name: "Home", element: Dashboard },
 
@@ -160,6 +165,26 @@ const routes = [
     path: "banner/edit/:bannerId",
     name: "Banner",
     element: EditBanner,
+    exact: true,
+  },
+
+  // post
+  {
+    path: "post",
+    name: "Post",
+    element: Post,
+    exact: true,
+  },
+  {
+    path: "post/add",
+    name: "AddPost",
+    element: AddPost,
+    exact: true,
+  },
+  {
+    path: "post/edit/:postId",
+    name: "EditPost",
+    element: EditPost,
     exact: true,
   },
 ];

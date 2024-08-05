@@ -199,34 +199,34 @@ function StudentDetail() {
   //   }
   // };
 
-  const handleDowloadPdf = async () => {
-    let headers = {
-      "Content-Type": "application/json",
-    };
-    const token = localStorage.getItem("adminvtnk");
+  // const handleDowloadPdf = async () => {
+  //   let headers = {
+  //     "Content-Type": "application/json",
+  //   };
+  //   const token = localStorage.getItem("adminvtnk");
 
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    await axios({
-      url: `${config.host}/admin/export-student-pdf/${studentId}`,
-      method: "GET",
-      responseType: "blob",
-      headers: headers,
-    })
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "hop-dong-vay.pdf");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  //   if (token) {
+  //     headers.Authorization = `Bearer ${token}`;
+  //   }
+  //   await axios({
+  //     url: `${config.host}/admin/export-student-pdf/${studentId}`,
+  //     method: "GET",
+  //     responseType: "blob",
+  //     headers: headers,
+  //   })
+  //     .then((response) => {
+  //       const url = window.URL.createObjectURL(new Blob([response.data]));
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.setAttribute("download", "hop-dong-vay.pdf");
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
+  // };
 
   const data = dataContracts?.map((item) => ({
     id: item.id,
@@ -253,13 +253,13 @@ function StudentDetail() {
         <>
           <div className="d-flex justify-content-between align-items-center">
             <h2>Thông tin sinh viên</h2>
-            <Button
+            {/* <Button
               disabled={detailStudent.status === 1 ? false : true}
               type="primary"
               onClick={handleDowloadPdf}
             >
               Tải về hợp đồng vay
-            </Button>
+            </Button> */}
           </div>
 
           {checkGuardian === 1 ? (
@@ -272,8 +272,8 @@ function StudentDetail() {
             detailStudent={detailStudent}
             propStatus={setStatus}
             onFinish={handleFinish}
-            loanValue={loanValue}
-            isLoanChange={isLoanChange}
+            // loanValue={loanValue}
+            // isLoanChange={isLoanChange}
           />
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Button
@@ -285,7 +285,7 @@ function StudentDetail() {
             </Button>
           </div>
 
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <h5 style={{ textTransform: "uppercase" }}>Upload file hợp đồng</h5>
             <div className="mt-3">
               <Upload {...props} accept=".pdf">
@@ -328,24 +328,16 @@ function StudentDetail() {
                     }
                     description={`Ngày upload: ${item.createDate}`}
                   />
-                  {/* <div>
-                    <Popconfirm
-                      title="Bạn có chắc muốn xóa?"
-                      onConfirm={() => handleDelete(item.id)}
-                    >
-                      <Button danger>Xóa</Button>
-                    </Popconfirm>
-                  </div> */}
                 </List.Item>
               )}
             />
-          </div>
+          </div> */}
 
-          <DebtMoney
+          {/* <DebtMoney
             nameStudent={detailStudent?.nameMember}
             studentId={studentId}
             propLoanChange={setIsLoanChange}
-          />
+          /> */}
         </>
       )}
     </>

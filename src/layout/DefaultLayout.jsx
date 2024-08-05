@@ -99,6 +99,15 @@ function DefaultLayout() {
         getItem(<Link to="/banner-pos/add">Thêm vị trí</Link>, "20"),
       ]
     ),
+    getItem(
+      "Quản lý bài đăng",
+      "21",
+      <PictureOutlined style={{ fontSize: 18 }} />,
+      [
+        getItem(<Link to="/banner">Quản lý bài đăng</Link>, "22"),
+        getItem(<Link to="/banner/add">Thêm mới nhiệm vụ</Link>, "23"),
+      ]
+    ),
   ];
 
   const fetchPermission = async () => {
