@@ -182,7 +182,7 @@ const routes = [
     exact: true,
   },
   {
-    path: "post/edit/:postId",
+    path: "post/edit",
     name: "EditPost",
     element: EditPost,
     exact: true,

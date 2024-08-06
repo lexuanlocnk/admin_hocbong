@@ -18,6 +18,7 @@ import { Link, useParams } from "react-router-dom";
 import config from "../../config";
 import { useForm } from "antd/es/form/Form";
 import { UploadOutlined } from "@ant-design/icons";
+import { CCol, CContainer, CRow } from "@coreui/react";
 
 function StudentDetail() {
   const [checkGuardian, setCheckGuardian] = useState(1);
@@ -250,42 +251,44 @@ function StudentDetail() {
           <Spin />{" "}
         </div>
       ) : (
-        <>
-          <div className="d-flex justify-content-between align-items-center">
-            <h2>Thông tin sinh viên</h2>
-            {/* <Button
+        <CContainer>
+          <CRow>
+            <CCol>
+              <div className="d-flex justify-content-between align-items-center">
+                <h3>THÔNG TIN NGƯỜI NHẬN</h3>
+                {/* <Button
               disabled={detailStudent.status === 1 ? false : true}
               type="primary"
               onClick={handleDowloadPdf}
             >
               Tải về hợp đồng vay
             </Button> */}
-          </div>
+              </div>
 
-          {checkGuardian === 1 ? (
-            <ParentForm detailStudent={detailStudent} />
-          ) : (
-            <GuadianForm detailStudent={detailStudent} />
-          )}
-          <StudentForm
-            form={form}
-            detailStudent={detailStudent}
-            propStatus={setStatus}
-            onFinish={handleFinish}
-            // loanValue={loanValue}
-            // isLoanChange={isLoanChange}
-          />
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              loading={updateLoading}
-              type="primary"
-              onClick={() => form.submit()}
-            >
-              Cập nhật
-            </Button>
-          </div>
+              {checkGuardian === 1 ? (
+                <ParentForm detailStudent={detailStudent} />
+              ) : (
+                <GuadianForm detailStudent={detailStudent} />
+              )}
+              <StudentForm
+                form={form}
+                detailStudent={detailStudent}
+                propStatus={setStatus}
+                onFinish={handleFinish}
+                // loanValue={loanValue}
+                // isLoanChange={isLoanChange}
+              />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Button
+                  loading={updateLoading}
+                  type="primary"
+                  onClick={() => form.submit()}
+                >
+                  Cập nhật
+                </Button>
+              </div>
 
-          {/* <div className="mb-5">
+              {/* <div className="mb-5">
             <h5 style={{ textTransform: "uppercase" }}>Upload file hợp đồng</h5>
             <div className="mt-3">
               <Upload {...props} accept=".pdf">
@@ -333,12 +336,14 @@ function StudentDetail() {
             />
           </div> */}
 
-          {/* <DebtMoney
+              {/* <DebtMoney
             nameStudent={detailStudent?.nameMember}
             studentId={studentId}
             propLoanChange={setIsLoanChange}
           /> */}
-        </>
+            </CCol>
+          </CRow>
+        </CContainer>
       )}
     </>
   );

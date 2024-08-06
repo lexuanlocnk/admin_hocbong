@@ -1,12 +1,16 @@
 import { CButton, CCol, CContainer, CFormSelect, CRow } from "@coreui/react";
-import { DatePicker, Popconfirm, Table } from "antd";
+import { DatePicker, message, Popconfirm, Table } from "antd";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import config from "../../config";
+import axios from "axios";
 
 function Post() {
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [dataTask, setDataTask] = useState([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -14,9 +18,6 @@ function Post() {
 
   // search input
   const [dataSearch, setDataSearch] = useState("");
-
-  //pagination state
-  const [pageNumber, setPageNumber] = useState(1);
 
   const handleAddNewClick = () => {
     navigate("/post/add");
@@ -54,21 +55,50 @@ function Post() {
     setError(errorMsg);
   };
 
-  // pagination data
-  const handlePageChange = ({ selected }) => {
-    const newPage = selected + 1;
-    if (newPage < 2) {
-      setPageNumber(newPage);
-      window.scrollTo(0, 0);
-      return;
-    }
-    window.scrollTo(0, 0);
-    setPageNumber(newPage);
-  };
-
   // search Data
   const handleSearch = (keyword) => {
-    // fetchDataCoupon(keyword);
+    fetchPostData(1, keyword);
+  };
+
+  const fetchPostData = async (page = 1, dataSearch = "") => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${config.host}/admin/task?page=${page}&data=${dataSearch}&fromDate=${startDate}&EndDate =${endDate}`,
+        {
+          headers: config.headers,
+        }
+      );
+
+      if (response.data.status === true) {
+        setDataTask(response.data.data);
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Fetch task data is error", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPostData();
+  }, [startDate, endDate]);
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(config.host + `/admin/task/${id}`, {
+        headers: config.headers,
+      });
+      if (res.data.status === true) {
+        message.success("Xóa nhiệm vụ thành công!");
+        fetchPostData();
+      }
+    } catch (error) {
+      console.error("Deleted task is error");
+      message.error("Đã xảy ra lỗi khi xóa. Vui lòng thử lại!");
+    }
   };
 
   const columns = [
@@ -82,45 +112,44 @@ function Post() {
     },
     {
       title: "Tiêu đề",
-      dataIndex: "newsTitle",
-      key: "newsTitle",
+      dataIndex: "taskTitle",
+      key: "taskTitle",
       render: (text, record) => {
         return <span>{record.title}</span>;
       },
-      // ellipsis: true,
     },
     {
-      title: "Hình ảnh",
-      dataIndex: "newsImage",
-      key: "newsImage",
+      title: "Ngày bắt đầu",
+      dataIndex: "startDate",
+      key: "startDate",
       render: (text, record) => {
         return (
-          <div className="image is-5by4">
-            <img
-              className="w-100 h-100"
-              src={config.img + record.picture}
-              alt={record.title}
-            />
-          </div>
+          <span>{moment.unix(record.startDate).format("DD-MM-YYYY")}</span>
         );
       },
     },
     {
-      title: "Danh mục",
-      dataIndex: "newsCategory",
-      key: "newsCategory",
+      title: "Ngày kết thúc",
+      dataIndex: "endDate",
+      key: "endDate",
       render: (text, record) => {
-        return (
-          <span>{record.cate_new === 1 ? "Tin nội bộ" : "Hoạt động quỹ"}</span>
-        );
+        return <span>{moment.unix(record.endDate).format("DD-MM-YYYY")}</span>;
       },
     },
     {
-      title: "Thông tin ",
-      dataIndex: "newsInfo",
-      key: "newsInfo",
+      title: "Ngày khởi tạo",
+      dataIndex: "datePost",
+      key: "datePost",
       render: (text, record) => {
-        return <span>{record.views} truy cập</span>;
+        return <span>{moment.unix(record.datePost).format("DD-MM-YYYY")}</span>;
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (text, record) => {
+        return <span>{record.display === 1 ? "Hiển thị" : "Ẩn bài"} </span>;
       },
     },
 
@@ -130,137 +159,153 @@ function Post() {
       key: "task",
       render: (text, record) => {
         return (
-          <>
-            <Link to={`/news/add?idNews=${record.id}`}>Chi tiết</Link>
-            <div className="mt-3">
+          <div className="d-flex gap-2 align-items-center">
+            <Link to={`/post/edit?task_id=${record.id}`}>
+              <CButton color="primary" size="sm">
+                Chi tiết
+              </CButton>
+            </Link>
+            <div>
               <Popconfirm
                 title="Bạn có chắc muốn xóa?"
-                // onConfirm={() => handleDelete(record.id)}
+                onConfirm={() => handleDelete(record.id)}
               >
-                <a>Xóa</a>
+                <CButton color="danger" size="sm">
+                  Xóa
+                </CButton>
               </Popconfirm>
             </div>
-          </>
+          </div>
         );
       },
     },
   ];
 
   return (
-    <CContainer>
-      <CRow className="mb-3">
-        <CCol>
-          <h3>QUẢN LÝ NHIỆM VỤ</h3>
-        </CCol>
-        <CCol md={{ span: 4, offset: 4 }}>
-          <div className="d-flex justify-content-end">
-            <CButton
-              onClick={handleAddNewClick}
-              color="primary"
-              type="submit"
-              size="sm"
-              className="button-add"
-            >
-              Thêm mới
-            </CButton>
-            <Link to={`/coupon`}>
-              <CButton color="primary" type="submit" size="sm" className="ms-2">
-                Danh sách
+    <>
+      {contextHolder}
+      <CContainer>
+        <CRow className="mb-3">
+          <CCol>
+            <h3>QUẢN LÝ NHIỆM VỤ</h3>
+          </CCol>
+          <CCol md={{ span: 4, offset: 4 }}>
+            <div className="d-flex justify-content-end">
+              <CButton
+                onClick={handleAddNewClick}
+                color="primary"
+                type="submit"
+                size="sm"
+                className="button-add"
+              >
+                Thêm mới
               </CButton>
-            </Link>
-          </div>
-        </CCol>
-      </CRow>
+              <Link to={`/post`}>
+                <CButton
+                  color="primary"
+                  type="submit"
+                  size="sm"
+                  className="ms-2"
+                >
+                  Danh sách
+                </CButton>
+              </Link>
+            </div>
+          </CCol>
+        </CRow>
 
-      <CRow>
-        <CCol md={12}>
-          <table className="filter-table">
-            <thead>
-              <tr>
-                <th colSpan="2">
-                  <div className="d-flex justify-content-between">
-                    <span>Bộ lọc tìm kiếm</span>
-                    <span
-                      className="toggle-pointer"
-                      onClick={handleToggleCollapse}
-                    >
-                      {isCollapse ? "▼" : "▲"}
-                    </span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            {!isCollapse && (
-              <tbody>
+        <CRow>
+          <CCol md={12}>
+            <table className="filter-table">
+              <thead>
                 <tr>
-                  <td>Tổng cộng</td>
-                  <td className="total-count">6</td>
-                </tr>
-
-                <tr>
-                  <td>Tạo từ ngày</td>
-                  <td>
-                    <div className="d-flex gap-2 align-items-center">
-                      <DatePicker
-                        format={"DD/MM/YYYY"}
-                        onChange={onChangeStartDate}
-                      />
-                      {"đến ngày"}
-                      <DatePicker
-                        format={"DD/MM/YYYY"}
-                        onChange={onChangeEndDate}
-                      />
-                    </div>
-                    {error && <div style={{ color: "red" }}>{error}</div>}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Tìm kiếm</td>
-                  <td>
-                    <CFormSelect
-                      className="component-size w-25"
-                      aria-label="Chọn yêu cầu lọc"
-                      options={[{ label: "Tiêu đề nhiệm vụ", value: "1" }]}
-                    />
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        className="search-input"
-                        value={dataSearch}
-                        onChange={(e) => setDataSearch(e.target.value)}
-                      />
-                      <button
-                        onClick={() => handleSearch(dataSearch)}
-                        className="submit-btn"
+                  <th colSpan="2">
+                    <div className="d-flex justify-content-between">
+                      <span>Bộ lọc tìm kiếm</span>
+                      <span
+                        className="toggle-pointer"
+                        onClick={handleToggleCollapse}
                       >
-                        Submit
-                      </button>
+                        {isCollapse ? "▼" : "▲"}
+                      </span>
                     </div>
-                  </td>
+                  </th>
                 </tr>
-              </tbody>
-            )}
-          </table>
-        </CCol>
-      </CRow>
+              </thead>
+              {!isCollapse && (
+                <tbody>
+                  <tr>
+                    <td>Tổng cộng</td>
+                    <td className="total-count">{dataTask?.total}</td>
+                  </tr>
 
-      <CRow>
-        <CCol>
-          <Table
-            pagination={{
-              pageSize: 5,
-              total: total,
-              onChange: (page) => {
-                // fetchData(page);
-              },
-            }}
-            loading={loading}
-            dataSource={newsData}
-            columns={columns}
-          />
-        </CCol>
-      </CRow>
-    </CContainer>
+                  <tr>
+                    <td>Tạo từ ngày</td>
+                    <td>
+                      <div className="d-flex gap-2 align-items-center">
+                        <DatePicker
+                          format={"DD/MM/YYYY"}
+                          onChange={onChangeStartDate}
+                        />
+                        {"đến ngày"}
+                        <DatePicker
+                          format={"DD/MM/YYYY"}
+                          onChange={onChangeEndDate}
+                        />
+                      </div>
+                      {error && <div style={{ color: "red" }}>{error}</div>}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Tìm kiếm</td>
+                    <td>
+                      <CFormSelect
+                        className="component-size w-25"
+                        aria-label="Chọn yêu cầu lọc"
+                        options={[{ label: "Tiêu đề nhiệm vụ", value: "1" }]}
+                      />
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          className="search-input"
+                          value={dataSearch}
+                          onChange={(e) => setDataSearch(e.target.value)}
+                        />
+                        <button
+                          onClick={() => handleSearch(dataSearch)}
+                          className="submit-btn"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </CCol>
+        </CRow>
+
+        <CRow className="mt-2">
+          <CCol>
+            <Table
+              bordered
+              rowHoverable={true}
+              pagination={{
+                pageSize: dataTask?.per_page,
+                total: dataTask?.total,
+                onChange: (page) => {
+                  fetchPostData(page);
+                },
+              }}
+              loading={loading}
+              dataSource={Array.isArray(dataTask?.data) ? dataTask.data : []}
+              columns={columns}
+            />
+          </CCol>
+        </CRow>
+      </CContainer>
+    </>
   );
 }
 

@@ -181,20 +181,6 @@ function Dashboard() {
                   {currencyFormat(dashboardData.commitmentMoney)}
                 </Card>
               </Col>
-              <Col span={8}>
-                <Card
-                  title="Tổng tiền đã hoàn trả"
-                  bordered={false}
-                  style={{
-                    backgroundColor: dashboardColors.totalAmountRefunded,
-                    color: "white",
-                    fontSize: "28px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {currencyFormat(dashboardData.totalLeftPaid)}
-                </Card>
-              </Col>
             </Row>
           </div>
 

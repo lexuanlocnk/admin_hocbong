@@ -75,3 +75,7 @@ a {
 .select-input {
   font-size: 14px;
 }
+
+.toggle-pointer {
+  cursor: pointer;
+}

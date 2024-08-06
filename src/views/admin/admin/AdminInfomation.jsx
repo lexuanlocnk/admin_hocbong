@@ -10,10 +10,15 @@ import {
   CFormCheck,
   CFormTextarea,
   CFormSelect,
+  CContainer,
+  CRow,
+  CCol,
 } from "@coreui/react";
 import { Spin, notification } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 
 function AddInfomation() {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +28,12 @@ function AddInfomation() {
   const [permissions, setPermissions] = useState([]);
   const [permissionsTotal, setPermissionsTotal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isCollapse, setIsCollapse] = useState(false);
+
+  const handleToggleCollapse = () => {
+    setIsCollapse((prevState) => !prevState);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -55,9 +66,6 @@ function AddInfomation() {
     fetchAdminInformation();
   }, []);
 
-  console.log(">>> check permissionsTotal", permissionsTotal);
-  console.log(">>> check permissions", permissions);
-
   useEffect(() => {
     const fetchAdminInformation = async () => {
       try {
@@ -86,196 +94,272 @@ function AddInfomation() {
     return name.split(".");
   };
 
+  const handleAddNewClick = () => {
+    navigate("/admin/add");
+  };
+
   return (
     <>
       {isLoading ? (
         <div className="w-100 text-center">
-          <Spin />{" "}
+          <Spin />
         </div>
       ) : (
-        <div className="container">
-          <div className="row">
-            <h2>Quản trị tài khoản Admin</h2>
-            <div className="col-md">
-              <h5>Thông tin Admin</h5>
-              <CForm>
-                <CFormInput
-                  type="text"
-                  id="name"
-                  label="Tên đăng nhập"
-                  placeholder=""
-                  aria-describedby="exampleFormControlInputHelpInline"
-                  text="Tên đăng nhập hệ thống (bắt buộc)."
-                  value={username}
-                  readOnly
-                />
-                <br />
-                <CFormInput
-                  type="password"
-                  id="name1"
-                  label="Mật khẩu"
-                  placeholder=""
-                  aria-describedby="exampleFormControlInputHelpInline"
-                  text="mật khẩu (không được để trống)."
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <br />
-                <CFormInput
-                  type="email"
-                  id="name2"
-                  label="Thư điện tử"
-                  placeholder=""
-                  aria-describedby="exampleFormControlInputHelpInline"
-                  text="Thư điện tử (bắt buộc)."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <br />
-                <CFormInput
-                  type="number"
-                  id="phone"
-                  label="Số điện thoại"
-                  placeholder=""
-                  aria-describedby="exampleFormControlInputHelpInline"
-                  text="Số điện thoại (bắt buộc)."
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-                <br />
-                <CFormInput
-                  type="text"
-                  id="name4"
-                  label="Tên hiển thị"
-                  placeholder=""
-                  aria-describedby="exampleFormControlInputHelpInline"
-                  text="Tên hiển thị (bắt buộc)."
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-                <br />
+        <CContainer>
+          <CRow className="mb-3">
+            <CCol>
+              <h3>THÔNG TIN ADMIN</h3>
+              <h6>Thông tin tài khoản</h6>
+            </CCol>
+            <CCol md={{ span: 4, offset: 4 }}>
+              <div className="d-flex justify-content-end">
+                <CButton
+                  onClick={handleAddNewClick}
+                  color="primary"
+                  type="submit"
+                  size="sm"
+                  className="button-add"
+                >
+                  Thêm mới
+                </CButton>
+                <Link to={`/admin`}>
+                  <CButton
+                    color="primary"
+                    type="submit"
+                    size="sm"
+                    className="ms-2"
+                  >
+                    Danh sách
+                  </CButton>
+                </Link>
+              </div>
+            </CCol>
+          </CRow>
 
-                <div>
-                  <h5>Quyền truy cập</h5>
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí Admin:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.admin?.map((item, index) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+          <CRow className="row">
+            <CForm>
+              <CFormInput
+                type="text"
+                id="name"
+                label="Tên đăng nhập"
+                placeholder=""
+                aria-describedby="exampleFormControlInputHelpInline"
+                value={username}
+                readOnly
+              />
+              <br />
+              <CFormInput
+                type="password"
+                id="name1"
+                label="Mật khẩu"
+                placeholder=""
+                aria-describedby="exampleFormControlInputHelpInline"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled
+              />
+              <br />
+              <CFormInput
+                type="email"
+                id="name2"
+                label="Thư điện tử"
+                placeholder=""
+                aria-describedby="exampleFormControlInputHelpInline"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <br />
+              <CFormInput
+                type="number"
+                id="phone"
+                label="Số điện thoại"
+                placeholder=""
+                aria-describedby="exampleFormControlInputHelpInline"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <br />
+              <CFormInput
+                type="text"
+                id="name4"
+                label="Tên hiển thị"
+                placeholder=""
+                aria-describedby="exampleFormControlInputHelpInline"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              <br />
 
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí sinh viên:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal?.student?.map((item) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
-                          </div>
+              <div>
+                <table className="filter-table">
+                  <thead>
+                    <tr>
+                      <th colSpan="2">
+                        <div className="d-flex justify-content-between">
+                          <span>QUYỀN TRUY CẬP</span>
+                          <span
+                            className="toggle-pointer"
+                            onClick={handleToggleCollapse}
+                          >
+                            {isCollapse ? "▼" : "▲"}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  {!isCollapse && (
+                    <tbody>
+                      <tr>
+                        <td>Quản lý tài khoản admin</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.admin?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id={`flexCheckDefault-${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
 
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí mạnh thường quân:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.member?.map((item) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
+                      <tr>
+                        <td>Quản lý sinh viên</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal?.student?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        </td>
+                      </tr>
 
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí tin tức:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.news?.map((item) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
+                      <tr>
+                        <td>Quản lý mạnh thường quân</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.member?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        </td>
+                      </tr>
 
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí bài đăng:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.post?.map((item) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
+                      <tr>
+                        <td>Quản lý tin tức</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.news?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        </td>
+                      </tr>
 
-                  <div className="row mt-3">
-                    <div className="col-3">Quản lí banner:</div>
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.banner?.map((item) => (
-                        <div>
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id="flexCheckDefault"
-                              label={getTitle(item.name)[1]}
-                              checked={permissions.some(
-                                (itemx) => itemx.id === item.id
-                              )}
-                            />
+                      <tr>
+                        <td>Quản lý bài đăng</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.post?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <br />
-              </CForm>
-            </div>
-          </div>
-        </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>Quản lý banner</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.banner?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
+              </div>
+              <br />
+            </CForm>
+          </CRow>
+        </CContainer>
       )}
     </>
   );

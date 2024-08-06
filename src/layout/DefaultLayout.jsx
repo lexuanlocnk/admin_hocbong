@@ -55,7 +55,7 @@ function DefaultLayout() {
       "admin"
     ),
     getItem(
-      "Quản lý sinh viên vay",
+      "Quản lý học bổng",
       "6",
       <UserOutlined style={{ fontSize: 18 }} />,
       [getItem(<Link to="/student">Thông tin sinh viên</Link>, "7")]
@@ -64,10 +64,7 @@ function DefaultLayout() {
       "Quản lý doanh nghiệp",
       "8",
       <BankOutlined style={{ fontSize: 18 }} />,
-      [
-        getItem(<Link to="/sponsor">Quản lý mạnh thường quân</Link>, "9"),
-        // getItem(<Link to="/sponsor/tien-gop">Quản lý tiền góp</Link>, "6"),
-      ]
+      [getItem(<Link to="/sponsor">Quản lý mạnh thường quân</Link>, "9")]
     ),
     getItem(
       "Quản lý tin tức",
@@ -166,7 +163,7 @@ function DefaultLayout() {
         />
       </Sider>
 
-      {/* <AppLeftHand/> */}
+      {/* <AppLeftHand /> */}
 
       <Layout style={{ marginLeft: 280 }}>
         <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -184,8 +181,8 @@ function DefaultLayout() {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Quỹ học bổng Nguyên Kim ©{new Date().getFullYear()} created by
-          nguyenkim-it-group.
+          Quỹ học bổng Nguyên Kim ©{new Date().getFullYear()} created by Nguyen
+          Kim IT.
         </Footer>
       </Layout>
     </Layout>

@@ -10,6 +10,10 @@ import {
   CFormCheck,
   CFormTextarea,
   CFormSelect,
+  CContainer,
+  CRow,
+  CCol,
+  CImage,
 } from "@coreui/react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { Spin, message, notification } from "antd";
@@ -28,6 +32,16 @@ function EditAdmin() {
   const [checkViewPermission, setCheckViewPermission] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
+
+  // upload image and show image
+  const [selectedFile, setSelectedFile] = useState("");
+  const [file, setFile] = useState([]);
+
+  const [isCollapse, setIsCollapse] = useState(false);
+
+  const handleToggleCollapse = () => {
+    setIsCollapse((prevState) => !prevState);
+  };
 
   const openNotificationWithIcon = (type) => {
     api[type]({
@@ -65,6 +79,7 @@ function EditAdmin() {
           setPermissions(data.permissions);
           setCategoriesPermission(data.categorys);
           setIsLoading(false);
+          setSelectedFile(data?.userAdminDetail.picture);
         }
 
         if (res.data.mess == "no permission") {
@@ -105,6 +120,33 @@ function EditAdmin() {
     return name.split(".");
   };
 
+  //set img category
+  function onFileChange(e) {
+    const files = e.target.files;
+    const selectedFiles = [];
+    const fileUrls = [];
+
+    Array.from(files).forEach((file) => {
+      // Create a URL for the file
+      fileUrls.push(URL.createObjectURL(file));
+
+      // Read the file as base64
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      fileReader.onload = (event) => {
+        selectedFiles.push(event.target.result);
+        // Set base64 data after all files have been read
+        if (selectedFiles.length === files.length) {
+          setSelectedFile(selectedFiles);
+        }
+      };
+    });
+
+    // Set file URLs for immediate preview
+    setFile(fileUrls);
+  }
+
   const handleSubmit = async () => {
     try {
       let headers = {
@@ -125,6 +167,7 @@ function EditAdmin() {
           permissionId: permissions,
           categoryId: categoriesPermission,
           display_name: fullName,
+          picture: selectedFile,
         },
         {
           headers: headers,
@@ -158,11 +201,25 @@ function EditAdmin() {
           <Spin />{" "}
         </div>
       ) : (
-        <div className="container">
-          <div className="row">
-            <h3>QUẢN LÝ TÀI KHOẢN ADMIN</h3>
-            <div className="col-md">
-              <h5>Thông tin Admin</h5>
+        <CContainer className="container">
+          <CRow className="mb-3">
+            <CCol md={6}>
+              <h3>QUẢN LÝ TÀI KHOẢN ADMIN</h3>
+              <h6>Chỉnh sửa tài khoản Admin</h6>
+            </CCol>
+
+            <CCol md={6}>
+              <div className="d-flex justify-content-end">
+                <Link to={`/admin`}>
+                  <CButton color="primary" type="submit" size="sm">
+                    Danh sách
+                  </CButton>
+                </Link>
+              </div>
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol>
               <CForm>
                 <CFormInput
                   type="text"
@@ -186,6 +243,38 @@ function EditAdmin() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <br />
+
+                <CCol md={12}>
+                  <CFormInput
+                    name="picture"
+                    type="file"
+                    id="formFile"
+                    label="Hình ảnh đại diện"
+                    onChange={(e) => onFileChange(e)}
+                    size="sm"
+                  />
+                  <br />
+
+                  <div>
+                    {file.length == 0 ? (
+                      <div>
+                        <CImage
+                          className="border"
+                          src={
+                            `http://192.168.245.180:8000/upload/` + selectedFile
+                          }
+                          width={200}
+                        />
+                      </div>
+                    ) : (
+                      file.map((item, index) => (
+                        <CImage key={index} src={item} width={200} />
+                      ))
+                    )}
+                  </div>
+                </CCol>
+                <br />
+
                 <CFormInput
                   type="email"
                   id="name2"
@@ -220,304 +309,367 @@ function EditAdmin() {
                 />
                 <br />
 
-                <div className="container" style={{ userSelect: "none" }}>
-                  <h5>Quyền truy cập</h5>
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="adminCheckbox"
-                      label={"Quản lí Admin"}
-                      checked={categoriesPermission?.includes(1)}
-                      onChange={(e) => {
-                        const idx = 1;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.admin?.map((item, index) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
-                          </div>
+                <table className="filter-table" style={{ userSelect: "none" }}>
+                  <thead>
+                    <tr>
+                      <th colSpan="2">
+                        <div className="d-flex justify-content-between">
+                          <span>QUYỀN TRUY CẬP</span>
+                          <span
+                            className="toggle-pointer"
+                            onClick={handleToggleCollapse}
+                          >
+                            {isCollapse ? "▼" : "▲"}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </th>
+                    </tr>
+                  </thead>
 
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="studentCheckbox"
-                      label={"Quản lí sinh viên"}
-                      checked={categoriesPermission?.includes(2)}
-                      onChange={(e) => {
-                        const idx = 2;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal?.student?.map((item) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
+                  {!isCollapse && (
+                    <tbody>
+                      {/* quan ly admin */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="adminCheckbox"
+                            label={"Quản lí tài khoản admin"}
+                            checked={categoriesPermission?.includes(1)}
+                            onChange={(e) => {
+                              const idx = 1;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.admin?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="memberCheckbox"
-                      label={"Quản lí mạnh thường quân"}
-                      checked={categoriesPermission?.includes(3)}
-                      onChange={(e) => {
-                        const idx = 3;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.member?.map((item) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
+                        </td>
+                      </tr>
+                      {/* quan ly hoc sinh */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="studentCheckbox"
+                            label={"Quản lí sinh viên"}
+                            checked={categoriesPermission?.includes(2)}
+                            onChange={(e) => {
+                              const idx = 2;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal?.student?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="newsCheckbox"
-                      label={"Quản lí tin tức"}
-                      checked={categoriesPermission?.includes(4)}
-                      onChange={(e) => {
-                        const idx = 4;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.news?.map((item) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
+                        </td>
+                      </tr>
+                      {/* quan ly manh thuong quan */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="memberCheckbox"
+                            label={"Quản lí mạnh thường quân"}
+                            checked={categoriesPermission?.includes(3)}
+                            onChange={(e) => {
+                              const idx = 3;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.member?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="postCheckbox"
-                      label={"Quản lí bài đăng"}
-                      checked={categoriesPermission?.includes(5)}
-                      onChange={(e) => {
-                        const idx = 5;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.post?.map((item) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
+                        </td>
+                      </tr>
+                      {/* quan ly tin tuc */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            className="col-3"
+                            id="newsCheckbox"
+                            label={"Quản lí tin tức"}
+                            checked={categoriesPermission?.includes(4)}
+                            onChange={(e) => {
+                              const idx = 4;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.news?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="row mt-3">
-                    <CFormCheck
-                      className="col-3"
-                      id="postCheckbox"
-                      label={"Quản lí banner"}
-                      checked={categoriesPermission?.includes(6)}
-                      onChange={(e) => {
-                        const idx = 6;
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                          setCategoriesPermission([
-                            ...categoriesPermission,
-                            idx,
-                          ]);
-                        } else {
-                          setCategoriesPermission(
-                            categoriesPermission.filter((item) => item !== idx)
-                          );
-                        }
-                      }}
-                    />
-                    <div className="col-9 d-flex">
-                      {permissionsTotal.banner?.map((item) => (
-                        <div key={item.id} className="container">
-                          <div key={item.name} style={{ marginRight: "30px" }}>
-                            <CFormCheck
-                              id={`flexCheckDefault_${item.id}`}
-                              label={getTitle(item.name)[1]}
-                              checked={permissions?.includes(item.id)}
-                              onChange={(e) => {
-                                const idDe = item.id;
-                                const isChecked = e.target.checked;
-                                if (isChecked) {
-                                  setPermissions([...permissions, idDe]);
-                                } else {
-                                  setPermissions(
-                                    permissions.filter((id) => id !== idDe)
-                                  );
-                                }
-                              }}
-                            />
+                        </td>
+                      </tr>
+                      {/* quan ly bai dang */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="postCheckbox"
+                            label={"Quản lí bài đăng"}
+                            checked={categoriesPermission?.includes(5)}
+                            onChange={(e) => {
+                              const idx = 5;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.post?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                        </td>
+                      </tr>
+                      {/* quan ly banner */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="postCheckbox"
+                            label={"Quản lí banner"}
+                            checked={categoriesPermission?.includes(6)}
+                            onChange={(e) => {
+                              const idx = 6;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.banner?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
                 <br />
 
                 <CButton
                   onClick={handleSubmit}
                   type="button"
                   color="primary"
-                  variant="outline"
+                  size="sm"
                 >
                   Cập nhật
                 </CButton>
               </CForm>
-            </div>
-          </div>
-        </div>
+            </CCol>
+          </CRow>
+        </CContainer>
       )}
     </>
   );

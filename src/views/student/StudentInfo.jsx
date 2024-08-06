@@ -1,23 +1,29 @@
 import { Flex, Space, Table } from "antd";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import config from "../../config";
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
+import { CButton, CCol, CContainer, CFormSelect, CRow } from "@coreui/react";
 
 function StudentInfo() {
+  const navigate = useNavigate();
   const [studentData, setStudentData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState("");
-  const [search, setSearch] = useState("");
+
+  // search input
+  const [dataSearch, setDataSearch] = useState("");
+
+  const [isCollapse, setIsCollapse] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     fetchData(1);
-  }, [search]);
+  }, []);
 
-  const fetchData = async (page) => {
+  const fetchData = async (page = 1, dataSearch = "") => {
     try {
       let headers = {
         "Content-Type": "application/json",
@@ -28,7 +34,7 @@ function StudentInfo() {
         headers.Authorization = `Bearer ${token}`;
       }
       const res = await axios.get(
-        config.host + `/admin/student?page=${page}&data=${search}`,
+        config.host + `/admin/student?page=${page}&data=${dataSearch}`,
         {
           headers: headers,
         }
@@ -41,17 +47,24 @@ function StudentInfo() {
     }
   };
 
-  const onSearch = (value) => setSearch(value);
+  const handleToggleCollapse = () => {
+    setIsCollapse((prevState) => !prevState);
+  };
+
+  // search Data
+  const handleSearch = (keyword) => {
+    fetchData(1, keyword);
+  };
 
   const columns = [
-    {
-      title: "STT",
-      dataIndex: "STT",
-      key: "STT",
-      render: (text, record, index) => {
-        return <span>{index + 1}</span>;
-      },
-    },
+    // {
+    //   title: "STT",
+    //   dataIndex: "STT",
+    //   key: "STT",
+    //   render: (text, record, index) => {
+    //     return <span>{index + 1}</span>;
+    //   },
+    // },
     {
       title: "Mã hợp đồng",
       dataIndex: "contractCode",
@@ -77,28 +90,28 @@ function StudentInfo() {
       },
     },
     {
-      title: "Lý do vay",
+      title: "Số lần nhận",
       dataIndex: "reasonLoan",
       key: "reasonLoan",
-      render: (text, record) => {
-        return <span>{record.reason}</span>;
-      },
+      // render: (text, record) => {
+      //   return <span>{record.reason}</span>;
+      // },
     },
+    // {
+    //   title: "Số tiền vay",
+    //   dataIndex: "loanAmount",
+    //   key: "loanAmount",
+    //   render: (text, record) => {
+    //     return <span>{record.loan}</span>;
+    //   },
+    // },
     {
-      title: "Số tiền vay",
-      dataIndex: "loanAmount",
-      key: "loanAmount",
-      render: (text, record) => {
-        return <span>{record.loan}</span>;
-      },
-    },
-    {
-      title: "Thời gian hoàn trả",
+      title: "Lần nhận gần nhất",
       dataIndex: "refundTime",
       key: "refundTime",
-      render: (text, record) => {
-        return <span>{dayjs(record.deadline).format("DD/MM/YYYY")}</span>;
-      },
+      // render: (text, record) => {
+      //   return <span>{dayjs(record.deadline).format("DD/MM/YYYY")}</span>;
+      // },
     },
 
     {
@@ -115,36 +128,98 @@ function StudentInfo() {
       dataIndex: "task",
       key: "task",
       render: (text, record) => {
-        return <Link to={`/student/detail/${record.id}`}>Chi tiết</Link>;
+        return (
+          <Link to={`/student/detail/${record.id}`}>
+            <CButton color="primary" size="sm">
+              Chi tiết
+            </CButton>
+          </Link>
+        );
       },
     },
   ];
   return (
-    <div className="row">
-      <div className="col-12">
-        <h2>Quản trị học viên</h2>
-      </div>
-      <div className="col-12 mt-3">
-        <Search
-          style={{ marginBottom: "20px" }}
-          placeholder="Tìm kiếm thông tin"
-          onSearch={onSearch}
-          enterButton
-        />
-        <Table
-          pagination={{
-            pageSize: 5,
-            total: total,
-            onChange: (page) => {
-              fetchData(page);
-            },
-          }}
-          loading={loading}
-          columns={columns}
-          dataSource={studentData}
-        />
-      </div>
-    </div>
+    <CContainer>
+      <CRow className="mb-3">
+        <CCol md={6}>
+          <h3>QUẢN LÝ HỌC BỔNG</h3>
+        </CCol>
+      </CRow>
+
+      <CRow>
+        <CCol md={12}>
+          <table className="filter-table">
+            <thead>
+              <tr>
+                <th colSpan="2">
+                  <div className="d-flex justify-content-between">
+                    <span>Bộ lọc tìm kiếm</span>
+                    <span
+                      className="toggle-pointer"
+                      onClick={handleToggleCollapse}
+                    >
+                      {isCollapse ? "▼" : "▲"}
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            {!isCollapse && (
+              <tbody>
+                <tr>
+                  <td>Tổng cộng</td>
+                  <td className="total-count">{total}</td>
+                </tr>
+
+                <tr>
+                  <td>Tìm kiếm</td>
+                  <td>
+                    <div className="mt-2">
+                      <strong>
+                        <em>
+                          Tìm kiếm theo Mã hợp đồng, Tên sinh viên, Số điện
+                          thoại
+                        </em>
+                      </strong>
+                      <input
+                        type="text"
+                        className="search-input"
+                        value={dataSearch}
+                        onChange={(e) => setDataSearch(e.target.value)}
+                      />
+                      <button
+                        onClick={() => handleSearch(dataSearch)}
+                        className="submit-btn"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            )}
+          </table>
+        </CCol>
+      </CRow>
+
+      <CRow className="mt-3">
+        <CCol>
+          <Table
+            bordered
+            pagination={{
+              pageSize: 10,
+              total: total,
+              onChange: (page) => {
+                fetchData(page);
+              },
+            }}
+            loading={loading}
+            columns={columns}
+            dataSource={studentData}
+          />
+        </CCol>
+      </CRow>
+    </CContainer>
   );
 }
 

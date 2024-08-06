@@ -20,7 +20,7 @@ import moment from "moment";
 import config from "../../config";
 import { cibKlout } from "@coreui/icons";
 
-function AddCoupon() {
+function AddPost() {
   const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = useState("");
 
@@ -70,8 +70,6 @@ function AddCoupon() {
   });
 
   const handleSubmit = async (values) => {
-    console.log(">>> check values :", values);
-
     try {
       const response = await axios.post(
         `${config.host}/admin/task`,
@@ -261,4 +259,4 @@ function AddCoupon() {
   );
 }
 
-export default AddCoupon;
+export default AddPost;
