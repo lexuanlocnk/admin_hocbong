@@ -1,6 +1,6 @@
 import { Avatar, Button } from "antd";
 import { Dropdown } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import config from "../config";
@@ -8,10 +8,14 @@ import Logo from "../assets/avatar1.gif";
 
 function AppHeader() {
   const navigate = useNavigate();
+
+  const [avartar, setAvartar] = useState(null);
+
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
+
   const username = localStorage.getItem("username");
   const items = [
     {
@@ -50,7 +54,7 @@ function AppHeader() {
           />
         </Dropdown>
 
-        <span style={{ marginLeft: 16, fontSize: 18, color: "black" }}>
+        <span style={{ marginLeft: 16, fontSize: 16, color: "black" }}>
           Xin chào, {username}
         </span>
       </div>

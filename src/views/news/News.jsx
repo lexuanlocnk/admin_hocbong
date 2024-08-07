@@ -5,6 +5,7 @@ import { Link, useAsyncError, useNavigate } from "react-router-dom";
 import config from "../../config";
 import axios from "axios";
 import "../../css/AddNews.css";
+import { CButton, CCol, CContainer, CFormSelect, CRow } from "@coreui/react";
 
 function News() {
   const navigate = useNavigate();
@@ -12,9 +13,17 @@ function News() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState("");
-  const [isDeleted, setIsDeleted] = useState();
 
   const [api, contextHolder] = notification.useNotification();
+
+  const [isCollapse, setIsCollapse] = useState(false);
+
+  // search input
+  const [dataSearch, setDataSearch] = useState("");
+
+  const handleToggleCollapse = () => {
+    setIsCollapse((prevState) => !prevState);
+  };
 
   const openNotificationWithIcon = (type) => {
     api[type]({
@@ -23,12 +32,10 @@ function News() {
     });
   };
 
-  const onSearch = (value, _e, info) => setSearch(value);
-
   useEffect(() => {
     setLoading(true);
     fetchData();
-  }, [search, isDeleted]);
+  }, []);
 
   const fetchData = async (page) => {
     try {
@@ -68,8 +75,8 @@ function News() {
         headers: headers,
       });
       if (res.data.status === true) {
-        setIsDeleted(true);
         message.success("Xóa tin tức thành công!");
+        fetchData();
       } else if ((res.data.mess = "no permission")) {
         openNotificationWithIcon("warning");
       } else {
@@ -78,6 +85,15 @@ function News() {
     } catch (error) {
       console.error("fail to fetch data.");
     }
+  };
+
+  const handleAddNewClick = () => {
+    navigate("/news/add");
+  };
+
+  // search Data
+  const handleSearch = (keyword) => {
+    fetchData(1, keyword);
   };
 
   const columns = [
@@ -93,9 +109,11 @@ function News() {
       title: "Tiêu đề",
       dataIndex: "newsTitle",
       key: "newsTitle",
+      width: "50%",
       render: (text, record) => {
         return <span>{record.title}</span>;
       },
+
       // ellipsis: true,
     },
     {
@@ -124,32 +142,29 @@ function News() {
         );
       },
     },
-    {
-      title: "Thông tin ",
-      dataIndex: "newsInfo",
-      key: "newsInfo",
-      render: (text, record) => {
-        return <span>{record.views} truy cập</span>;
-      },
-    },
 
     {
       title: "Tác vụ",
       dataIndex: "task",
       key: "task",
+      width: 150,
       render: (text, record) => {
         return (
-          <>
-            <Link to={`/news/add?idNews=${record.id}`}>Chi tiết</Link>
-            <div className="mt-3">
+          <div className="d-flex align-items-center">
+            <Link to={`/news/edit?news_id=${record?.id}`}>
+              <CButton size="sm">Chi tiết</CButton>
+            </Link>
+            <div className="ms-2">
               <Popconfirm
                 title="Bạn có chắc muốn xóa?"
                 onConfirm={() => handleDelete(record.id)}
               >
-                <a>Xóa</a>
+                <CButton color="danger" size="sm">
+                  Xóa
+                </CButton>
               </Popconfirm>
             </div>
-          </>
+          </div>
         );
       },
     },
@@ -158,25 +173,103 @@ function News() {
   return (
     <>
       {contextHolder}
-      <div>
-        <div className="mb-3">
-          <h2>Quản trị tin tức</h2>
-          <Button onClick={() => navigate("/news/add")} type="primary">
-            Thêm mới bài viết
-          </Button>
-        </div>
+      <CContainer>
+        <CRow className="mb-3">
+          <CCol>
+            <h3>QUẢN LÝ TIN TỨC</h3>
+          </CCol>
+          <CCol md={{ span: 4, offset: 4 }}>
+            <div className="d-flex justify-content-end">
+              <CButton
+                onClick={handleAddNewClick}
+                color="primary"
+                type="submit"
+                size="sm"
+                className="button-add"
+              >
+                Thêm mới
+              </CButton>
+              <Link to={`/news`}>
+                <CButton
+                  color="primary"
+                  type="submit"
+                  size="sm"
+                  className="ms-2"
+                >
+                  Danh sách
+                </CButton>
+              </Link>
+            </div>
+          </CCol>
+        </CRow>
 
-        <div className="row">
-          <div className="col-12 mb-3">
-            <Search
-              placeholder="Tìm kiếm thông tin"
-              onSearch={onSearch}
-              enterButton
-            />
-          </div>
+        <CRow>
+          <CCol md={12}>
+            <table className="filter-table">
+              <thead>
+                <tr>
+                  <th colSpan="2">
+                    <div className="d-flex justify-content-between">
+                      <span>Bộ lọc tìm kiếm</span>
+                      <span
+                        className="toggle-pointer"
+                        onClick={handleToggleCollapse}
+                      >
+                        {isCollapse ? "▼" : "▲"}
+                      </span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              {!isCollapse && (
+                <tbody>
+                  <tr>
+                    <td>Tổng cộng</td>
+                    <td className="total-count">{total}</td>
+                  </tr>
 
-          <div className="col-12">
+                  <tr>
+                    <td>Lọc theo danh mục</td>
+                    <td>
+                      <CFormSelect
+                        className="component-size w-25"
+                        aria-label="Chọn yêu cầu lọc"
+                        options={[
+                          { label: "Tin nội bộ", value: "0" },
+                          { label: "Tin hoạt động", value: "1" },
+                        ]}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Tìm kiếm</td>
+                    <td>
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          className="search-input"
+                          value={dataSearch}
+                          onChange={(e) => setDataSearch(e.target.value)}
+                        />
+                        <button
+                          onClick={() => handleSearch(dataSearch)}
+                          className="submit-btn"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </CCol>
+        </CRow>
+
+        <CRow className="mt-3">
+          <CCol>
             <Table
+              bordered
               pagination={{
                 pageSize: 5,
                 total: total,
@@ -188,9 +281,9 @@ function News() {
               dataSource={newsData}
               columns={columns}
             />
-          </div>
-        </div>
-      </div>
+          </CCol>
+        </CRow>
+      </CContainer>
     </>
   );
 }

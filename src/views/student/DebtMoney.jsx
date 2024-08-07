@@ -18,6 +18,7 @@ import axios from "axios";
 import config from "../../config";
 import InputNumberCustom from "../../components/inputNumberCustom";
 import { UploadOutlined } from "@ant-design/icons";
+import { CCol, CContainer, CRow } from "@coreui/react";
 
 const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   const [checkUpdateTable, setCheckUpdateTable] = useState(false);
@@ -84,33 +85,28 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   };
 
   const columns = [
-    {
-      title: "Tên sinh viên	",
-      dataIndex: "nameMember",
-      key: "nameStudent",
-    },
+    // {
+    //   title: "Tên sinh viên	",
+    //   dataIndex: "nameMember",
+    //   key: "nameStudent",
+    // },
     {
       title: "Mã phiếu thu	",
       dataIndex: "code",
       key: "receiptCode",
     },
     {
-      title: "Số tiền đã trả",
+      title: "Số tiền đã nhận",
       dataIndex: "moneyPaid",
       key: "amountPaid",
     },
     {
-      title: "Ngày trả",
+      title: "Ngày khởi tạo",
       dataIndex: "dates",
       key: "payDay",
     },
     {
-      title: "Số tiền còn lại",
-      dataIndex: "loan",
-      key: "remainingAmount",
-    },
-    {
-      title: "Đường dẫn file phiếu thu",
+      title: "Bản scan PDF phiếu thu",
       dataIndex: "contract",
       key: "contract",
       ellipsis: {
@@ -150,7 +146,6 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
         currentFile = file;
       });
 
-      console.log(">>> check amountPaid", amountPaid);
       if (amountPaid > 0 && !isNaN(amountPaid)) {
         const res = await axios.post(
           `${config.host}/admin/update-student-money/${studentId}`,
@@ -177,6 +172,7 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
       console.error("Lỗi:", error.message || error);
     }
   };
+
   const checkPrice = (_, value) => {
     console.log(value);
     if (value.number > 0) {
@@ -203,20 +199,25 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   return (
     <>
       {contextHolder}
-      <div>
-        <h1
-          style={{ fontSize: "24px", marginTop: 0, textTransform: "uppercase" }}
-        >
-          Quản lí tiền nợ
-        </h1>
+      <CContainer>
+        <CRow>
+          <CCol md={6}>
+            <h3>QUẢN LÝ TIỀN NHẬN</h3>
+          </CCol>
+          <CCol md={6}>
+            <div className="d-flex justify-content-end">
+              <Button
+                onClick={handleAdd}
+                type="primary"
+                style={{ marginBottom: 16 }}
+              >
+                Thêm thông tin
+              </Button>
+            </div>
+          </CCol>
+        </CRow>
+
         <div className="w-100">
-          <Button
-            onClick={handleAdd}
-            type="primary"
-            style={{ marginBottom: 16 }}
-          >
-            Thêm thông tin
-          </Button>
           <div>
             <Table
               rowClassName={() => "editable-row"}
@@ -267,7 +268,7 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Số tiền đã trả"
+                  label="Số tiền nhận"
                   name="amountPaid"
                   rules={[
                     {
@@ -340,7 +341,7 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
             </Modal>
           </div>
         </div>
-      </div>
+      </CContainer>
     </>
   );
 };

@@ -51,6 +51,7 @@ function AddNews() {
       const res = await axios.post(config.host + "/admin/news", value, {
         headers: headers,
       });
+
       if (res.data.status == true) {
         message.success("Thêm mới thành công!");
         navigate(`/news/add?idNews=${res.data.newsId}`);
@@ -131,10 +132,6 @@ function AddNews() {
     }
   };
 
-  console.log(
-    "dataNews.description ? dataNews.description :",
-    dataNews.description ? dataNews.description : "oke"
-  );
   useEffect(() => {
     if (idNews && idNews != null) {
       fetchDataEdit(idNews);

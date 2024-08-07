@@ -159,7 +159,7 @@ const ContributeMoney = ({
       key: "dateContribute",
     },
     {
-      title: "Đường dẫn file phiếu thu",
+      title: "Bản scan PDF phiếu thu",
       dataIndex: "contract",
       key: "contract",
       ellipsis: {
@@ -202,7 +202,7 @@ const ContributeMoney = ({
     <>
       {contextHolder}
       <div>
-        <h2 style={{ textTransform: "uppercase" }}>Quản lí tiền góp</h2>
+        <h3>Quản LÝ TIỀN GÓP</h3>
         <div className="w-100">
           <div className="d-flex align-items-center justify-content-between">
             <Button
@@ -223,7 +223,7 @@ const ContributeMoney = ({
                   {dataMoney && currentcyFormat(dataMoney.commitmentMoney)}
                 </h6>
                 <h6>
-                  Tiền Thực góp:{" "}
+                  Tiền thực góp:{" "}
                   {dataMoney && currentcyFormat(dataMoney.actualPayment)}
                 </h6>
                 <h6>

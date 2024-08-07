@@ -13,18 +13,14 @@ import {
   CImage,
   CRow,
 } from "@coreui/react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import axios from "axios";
 import CKedtiorCustom from "../../components/customEditor/customEditor";
-import { message } from "antd";
+import { DatePicker, message } from "antd";
 import config from "../../config";
 
 function AddPost() {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const id = searchParams.get("news_id");
-
   const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = useState("");
 
@@ -32,7 +28,7 @@ function AddPost() {
   const [selectedFile, setSelectedFile] = useState("");
   const [file, setFile] = useState([]);
 
-  const [initialValues, setInitialValues] = useState({
+  const initialValues = {
     title: "",
     shortDesc: "",
     pageTitle: "",
@@ -41,7 +37,7 @@ function AddPost() {
     metaDesc: "",
     category: 1,
     visible: 2,
-  });
+  };
 
   const validationSchema = Yup.object({
     title: Yup.string()
@@ -79,43 +75,12 @@ function AddPost() {
     setFile(fileUrls);
   }
 
-  const fetchDataById = async () => {
-    try {
-      const response = await axios.get(`${config.host}/admin/news/${id}/edit`, {
-        headers: config.headers,
-      });
-      const data = response.data.data;
-      if (data && response.data.status === true) {
-        setInitialValues({
-          title: data.title,
-          shortDesc: data?.short,
-          pageTitle: data?.friendly_title,
-          friendlyUrl: data.friendly_url,
-          metaKeyword: data.metakey,
-          metaDesc: data.metadesc,
-          category: data?.cate_new,
-          visible: data.status,
-        });
-        setSelectedFile(data?.picture);
-        setEditor(data?.description);
-      } else {
-        console.error("No data found for the given ID.");
-      }
-    } catch (error) {
-      console.error("Fetch data id task is error", error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchDataById();
-  }, []);
-
   const handleSubmit = async (values) => {
     console.log(">>> check values news: ", values);
 
     try {
-      const response = await axios.put(
-        `${config.host}/admin/news/${id}`,
+      const response = await axios.post(
+        `${config.host}/admin/news`,
         {
           title: values.title,
           short: values.shortDesc,
@@ -135,11 +100,11 @@ function AddPost() {
       if (response.data.status === true) {
         messageApi.open({
           type: "success",
-          content: "Cập nhật tin tức thành công!",
+          content: "Thêm mới tin tức thành công!",
         });
       }
     } catch (error) {
-      console.log("Put data news is error", error);
+      console.log("Post data news is error", error);
       messageApi.open({
         type: "error",
         content: "Đã xảy ra lỗi. Vui lòng thử lại!",
@@ -153,12 +118,12 @@ function AddPost() {
       <CContainer>
         <CRow className="mb-3">
           <CCol>
-            <h3>CẬP NHẬT TIN TỨC</h3>
+            <h3>THÊM MỚI TIN TỨC</h3>
           </CCol>
           <CCol md={{ span: 4, offset: 4 }}>
             <div className="d-flex justify-content-end">
-              <Link to={`/post`}>
-                <CButton color="primary" type="button" size="sm">
+              <Link to={`/news`}>
+                <CButton color="primary" type="submit" size="sm">
                   Danh sách
                 </CButton>
               </Link>
@@ -172,7 +137,6 @@ function AddPost() {
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
-              enableReinitialize
             >
               {({ setFieldValue, values }) => (
                 <Form>
@@ -226,11 +190,7 @@ function AddPost() {
                           id="url-input"
                           text="Chuỗi dẫn tĩnh là phiên bản của tên hợp chuẩn với Đường dẫn (URL). Chuỗi này bao gồm chữ cái thường, số và dấu gạch ngang (-). VD: vi-tinh-nguyen-kim-to-chuc-su-kien-tri-an-dip-20-nam-thanh-lap"
                         />
-                        <ErrorMessage
-                          name="friendlyUrl"
-                          component="div"
-                          className="text-danger"
-                        />
+                        <ErrorMessage name="friendlyUrl" component="div" />
                       </CCol>
                       <br />
 
@@ -243,11 +203,7 @@ function AddPost() {
                           id="pageTitle-input"
                           text="Độ dài của tiêu đề trang tối đa 60 ký tự."
                         />
-                        <ErrorMessage
-                          name="pageTitle"
-                          component="div"
-                          className="text-danger"
-                        />
+                        <ErrorMessage name="pageTitle" component="div" />
                       </CCol>
                       <br />
 
@@ -329,7 +285,7 @@ function AddPost() {
                               <CImage
                                 className="border"
                                 src={
-                                  `http://192.168.245.180:8000/upload/` +
+                                  `http://192.168.245.180:8000/uploads/` +
                                   selectedFile
                                 }
                                 width={200}
@@ -365,7 +321,7 @@ function AddPost() {
                       <br />
                       <CCol xs={12}>
                         <CButton color="primary" type="submit" size="sm">
-                          Cập nhật
+                          Thêm mới
                         </CButton>
                       </CCol>
                     </CCol>

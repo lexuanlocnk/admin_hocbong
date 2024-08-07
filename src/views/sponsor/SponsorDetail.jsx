@@ -18,6 +18,7 @@ import config from "../../config";
 import { useParams } from "react-router-dom";
 import NumberInput from "../../components/inputNumberAntd";
 import { UploadOutlined } from "@ant-design/icons";
+import { CCol, CContainer, CRow } from "@coreui/react";
 
 function SponsorDetail() {
   const [form] = Form.useForm();
@@ -265,88 +266,94 @@ function SponsorDetail() {
           <Spin />{" "}
         </div>
       ) : (
-        <div>
-          <div className="d-flex justify-content-between align-items-center">
-            <h2>Thông tin mạnh thường quân</h2>
-            <Button
+        <CContainer>
+          <CRow className="justify-content-between align-items-center">
+            <CCol>
+              <h3>THÔNG TIN NGƯỜI ĐÓNG GÓP</h3>
+            </CCol>
+
+            {/* <Button
               disabled={sponsorDetail.status === 1 ? false : true}
               type="primary"
               onClick={handleDowloadPdf}
             >
               Tải về hợp đồng tài trợ
-            </Button>
-          </div>
-          <div>
-            <Form
-              onFinish={submitForm}
-              form={form}
-              name="basic"
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 19 }}
-              initialValues={{ remember: true }}
-              autoComplete="off"
-            >
-              <Form.Item label="Họ và tên mạnh thường quân:" name="sponsorName">
-                <Input readOnly={true} />
-              </Form.Item>
-
-              <Form.Item label="Email:" name="sponsorEmail">
-                <Input readOnly={true} />
-              </Form.Item>
-
-              <Form.Item label="Số điện thoại:" name="sponsorPhone">
-                <Input readOnly={true} />
-              </Form.Item>
-
-              <Form.Item label="Tên công ty:" name="companyName">
-                <Input readOnly={true} />
-              </Form.Item>
-
-              <Form.Item label="Địa chỉ công ty:" name="companyAddress">
-                <Input readOnly={true} />
-              </Form.Item>
-
-              <Form.Item
-                rules={[
-                  {
-                    required: true,
-                    message: "Nhập số tiền cam kết!",
-                    validator: checkPrice,
-                  },
-                ]}
-                label="Tiền cam kết:"
-                name="committedMoney"
+            </Button> */}
+          </CRow>
+          <CRow className="mt-3">
+            <h5>Thông tin mạnh thường quân</h5>
+            <CCol className="mt-2">
+              <Form
+                onFinish={submitForm}
+                form={form}
+                name="basic"
+                labelCol={{ span: 4 }}
+                wrapperCol={{ span: 16 }}
+                initialValues={{ remember: true }}
+                autoComplete="off"
               >
-                <NumberInput />
-              </Form.Item>
+                <Form.Item label="Họ và tên:" name="sponsorName">
+                  <Input readOnly={true} />
+                </Form.Item>
 
-              <Form.Item
-                rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
-                label="Trạng thái:"
-                name="status"
-              >
-                <Radio.Group>
-                  <Radio value={true}>Duyệt</Radio>
-                  <Radio value={false}>Chưa duyệt</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item className="text-center">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={updateLoading}
+                <Form.Item label="Email:" name="sponsorEmail">
+                  <Input readOnly={true} />
+                </Form.Item>
+
+                <Form.Item label="Số điện thoại:" name="sponsorPhone">
+                  <Input readOnly={true} />
+                </Form.Item>
+
+                <Form.Item label="Tên công ty:" name="companyName">
+                  <Input readOnly={true} />
+                </Form.Item>
+
+                <Form.Item label="Địa chỉ công ty:" name="companyAddress">
+                  <Input readOnly={true} />
+                </Form.Item>
+
+                <Form.Item
+                  rules={[
+                    {
+                      required: true,
+                      message: "Nhập số tiền cam kết!",
+                      validator: checkPrice,
+                    },
+                  ]}
+                  label="Tiền cam kết:"
+                  name="committedMoney"
                 >
-                  Cập nhật
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
+                  <NumberInput />
+                </Form.Item>
 
-          <div className="mb-5">
-            <h5 style={{ textTransform: "uppercase" }}>Upload file hợp đồng</h5>
+                <Form.Item
+                  rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
+                  label="Trạng thái:"
+                  name="status"
+                >
+                  <Radio.Group>
+                    <Radio value={true}>Duyệt</Radio>
+                    <Radio value={false}>Chưa duyệt</Radio>
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item className="text-center">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={updateLoading}
+                  >
+                    Cập nhật
+                  </Button>
+                </Form.Item>
+              </Form>
+            </CCol>
+          </CRow>
+
+          <CRow className="mb-4">
+            <h5>Danh sách Hợp đồng đã ký</h5>
             <div className="mt-3">
               <Upload {...props} accept=".pdf">
-                <Button icon={<UploadOutlined />}>Select File</Button>
+                <Button icon={<UploadOutlined />}>Chọn file</Button>
               </Upload>
               <Button
                 type="primary"
@@ -355,49 +362,40 @@ function SponsorDetail() {
                 loading={uploading}
                 style={{ marginTop: 16 }}
               >
-                {uploading ? "Uploading" : "Start Upload"}
+                {uploading ? "Đang upload file" : "Upload hợp đồng"}
               </Button>
             </div>
-          </div>
 
-          <div className="mb-5">
-            <h5 style={{ textTransform: "uppercase" }}>Danh sách hợp đồng</h5>
-            <List
-              itemLayout="horizontal"
-              dataSource={data}
-              renderItem={(item, index) => (
-                <List.Item
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                  }}
-                >
-                  <List.Item.Meta
-                    style={{ maxWidth: "600px" }}
-                    title={
-                      <a
-                        target="blank
+            <div className="mb-5">
+              <List
+                itemLayout="horizontal"
+                dataSource={data}
+                renderItem={(item) => (
+                  <List.Item
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "start",
+                    }}
+                  >
+                    <List.Item.Meta
+                      style={{ maxWidth: "600px" }}
+                      title={
+                        <a
+                          target="blank
                       "
-                        href={`${config.contract}${item.url}`}
-                      >
-                        {item.name}
-                      </a>
-                    }
-                    description={`Ngày upload: ${item.createDate}`}
-                  />
-                  {/* <div>
-                    <Popconfirm
-                      title="Bạn có chắc muốn xóa?"
-                      onConfirm={() => handleDelete(item.id)}
-                    >
-                      <Button danger>Xóa</Button>
-                    </Popconfirm>
-                  </div> */}
-                </List.Item>
-              )}
-            />
-          </div>
+                          href={`${config.contract}${item.url}`}
+                        >
+                          {item.name}
+                        </a>
+                      }
+                      description={`Ngày upload: ${item.createDate}`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </div>
+          </CRow>
 
           <ContributeMoney
             checkPrice={checkPrice}
@@ -406,7 +404,7 @@ function SponsorDetail() {
             nameMember={sponsorDetail.username}
             sponsorId={sponsorId}
           />
-        </div>
+        </CContainer>
       )}
     </>
   );

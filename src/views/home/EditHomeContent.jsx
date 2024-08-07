@@ -1,5 +1,3 @@
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import {
   Button,
   Col,
@@ -11,17 +9,22 @@ import {
   notification,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import TextArea from "antd/es/input/TextArea";
+
 import axios from "axios";
 import config from "../../config";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CCol, CFormLabel } from "@coreui/react";
+import CKedtiorCustom from "../../components/customEditor/customEditor";
 
 function EditHomeContent() {
   const [form] = useForm();
-  const [contentData, setContentData] = useState({});
+
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
+
+  const [mainEditor, setMainEditor] = useState("");
+  const [footerEditor, setFooterEditor] = useState("");
 
   const [checkViewPermission, setCheckViewPermission] = useState(false);
   const openNotificationWithIcon = (type) => {
@@ -50,7 +53,8 @@ function EditHomeContent() {
         headers: headers,
       });
       if (res.data.status === true) {
-        setContentData(res.data.data);
+        setMainEditor(res.data.data.contentMain);
+        setFooterEditor(res.data.data.contentFooter);
         form.setFieldsValue({
           gmail: res.data.data.address_email,
           link: res.data.data.address_url,
@@ -70,8 +74,8 @@ function EditHomeContent() {
       const res = await axios.put(
         config.host + `/admin/post/3`,
         {
-          contentMain: values.contentMain,
-          contentFooter: values.contentFooter,
+          contentMain: mainEditor,
+          contentFooter: footerEditor,
           address_email: values.gmail,
           address_url: values.link,
           address_fund: values.address,
@@ -108,14 +112,7 @@ function EditHomeContent() {
         </div>
       ) : (
         <>
-          <h2
-            style={{
-              fontWeight: 700,
-              textTransform: "uppercase",
-            }}
-          >
-            Cập nhật nội dung trang chủ
-          </h2>
+          <h3>CẬP NHẬT NỘI DUNG TRANG CHỦ</h3>
           <Row style={{ justifyContent: "space-between", marginTop: 24 }}>
             <Col span={24}>
               <Form
@@ -126,18 +123,17 @@ function EditHomeContent() {
                 wrapperCol={{ span: 20 }}
                 autoComplete="off"
               >
-                <Form.Item label="Nội dung chính:" name="contentMain">
-                  <CKEditor
-                    editor={ClassicEditor}
-                    data={contentData.contentMain ?? "ok"}
-                    onChange={(event, editor) => {
-                      form.setFieldsValue({ contentMain: editor.getData() });
-                    }}
+                <CCol md={12}>
+                  <CFormLabel>Nội dung giới thiệu học bổng</CFormLabel>
+                  <CKedtiorCustom
+                    data={mainEditor}
+                    onChangeData={(data) => setMainEditor(data)}
                   />
-                </Form.Item>
+                </CCol>
+                <br />
 
                 <div>
-                  <h4 className="mb-3">Thông tin chân trang:</h4>
+                  <h5 className="mb-3">Thông tin chân trang:</h5>
 
                   <Form.Item
                     label="Địa chỉ gmail:"
@@ -178,17 +174,14 @@ function EditHomeContent() {
                     <Input />
                   </Form.Item>
 
-                  <Form.Item label="Nội dung chân trang:" name="contentFooter">
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={contentData.contentFooter ?? "ok"}
-                      onChange={(event, editor) => {
-                        form.setFieldsValue({
-                          contentFooter: editor.getData(),
-                        });
-                      }}
+                  <CCol md={12}>
+                    <CFormLabel>Nội dung phần chân trang</CFormLabel>
+                    <CKedtiorCustom
+                      data={footerEditor}
+                      onChangeData={(data) => setFooterEditor(data)}
                     />
-                  </Form.Item>
+                  </CCol>
+                  <br />
                 </div>
 
                 <Form.Item>

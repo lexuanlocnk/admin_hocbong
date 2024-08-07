@@ -1,6 +1,4 @@
-import axios from "axios";
 import React, { useEffect } from "react";
-import config from "./config.js";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard.jsx"));
 
@@ -29,6 +27,7 @@ const SponsorDetail = React.lazy(() =>
 // News
 const News = React.lazy(() => import("./views/news/News.jsx"));
 const AddNews = React.lazy(() => import("./views/news/AddNews.jsx"));
+const AddNews1 = React.lazy(() => import("./views/news/AddNews1.jsx"));
 const EditNews = React.lazy(() => import("./views/news/EditNews.jsx"));
 
 // Home
@@ -106,10 +105,11 @@ const routes = [
 
   // news
   { path: "news", name: "News", element: News, exact: true },
-  { path: "news/add", name: "News", element: AddNews, exact: true },
+  // { path: "news/add", name: "AddNews", element: AddNews, exact: true },
+  { path: "news/add", name: "AddNews1", element: AddNews1, exact: true },
   {
-    path: "news/edit/:newId",
-    name: "News",
+    path: "news/edit",
+    name: "EditNews",
     element: EditNews,
     exact: true,
   },

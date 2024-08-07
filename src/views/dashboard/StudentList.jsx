@@ -76,15 +76,19 @@ function StudentList({ studentData, loading, setCurrentPage }) {
       <Column title="Mã hợp đồng" dataIndex="makh" key="makh" />
       <Column title="Tên sinh viên" dataIndex="name" key="name" />
       <Column title="Số điện thoại" dataIndex="tel" key="tel" />
-      <Column
+      {/* <Column
         title="Lý do vay"
         dataIndex="reason_debt"
         key="reason_debt"
         ellipsis={true}
-      />
-      <Column title="Số tiền vay" dataIndex="debt_amount" key="debt_amount" />
+      /> */}
       <Column
-        title="Thời gian hoàn trả"
+        title="Tổng tiền nhận"
+        dataIndex="debt_amount"
+        key="debt_amount"
+      />
+      <Column
+        title="Lần nhận gần nhất"
         dataIndex="refund_period"
         key="refund_period"
         render={(text) => <div>{text}</div>}

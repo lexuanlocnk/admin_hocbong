@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import config from "../../../config";
 import { useParams, Link } from "react-router-dom";
+import { CButton, CFormInput, CImage } from "@coreui/react";
 
 function EditBanner() {
   const [bannerData, setBannerData] = useState();
@@ -22,6 +23,10 @@ function EditBanner() {
     button: false,
     page: false,
   });
+
+  // upload image and show image
+  const [selectedFile, setSelectedFile] = useState("");
+  const [file, setFile] = useState([]);
 
   const [form] = Form.useForm();
 
@@ -37,20 +42,32 @@ function EditBanner() {
     });
   };
 
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+  //set img detail
+  function onFileChange(e) {
+    const files = e.target.files;
+    const selectedFiles = [];
+    const fileUrls = [];
 
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
+    Array.from(files).forEach((file) => {
+      // Create a URL for the file
+      fileUrls.push(URL.createObjectURL(file));
+
+      // Read the file as base64
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      fileReader.onload = (event) => {
+        selectedFiles.push(event.target.result);
+        // Set base64 data after all files have been read
+        if (selectedFiles.length === files.length) {
+          setSelectedFile(selectedFiles);
+        }
+      };
     });
+
+    // Set file URLs for immediate preview
+    setFile(fileUrls);
+  }
 
   useEffect(() => {
     fetchBannerData();
@@ -89,11 +106,12 @@ function EditBanner() {
 
       if (res.data.status === true) {
         setBannerData(res.data.data);
+        setSelectedFile(res.data.data.picture);
         form.setFieldsValue({
           title: res.data.data.title,
           selectPosition: res.data.data.pos_id,
           status: res.data.data.status == 1 ? 1 : 0,
-          link: res.data.data.url
+          link: res.data.data.url,
         });
       } else {
         if (res.data.mess == "no permission") {
@@ -114,10 +132,10 @@ function EditBanner() {
         config.host + `/admin/banner/${bannerId}`,
         {
           title: values.title,
-          picture: values.picture,
+          picture: selectedFile,
           pos_id: values.selectPosition,
           status: values.status,
-          url: values.link
+          url: values.link,
         },
         {
           headers: config.headers,
@@ -162,13 +180,20 @@ function EditBanner() {
           {contextHolder}
           <div className="container">
             <div className="row">
-              <div className="col-12">
-                <h2 style={{
-                  fontWeight: 700,
-                  textTransform: "uppercase"
-                }}>Cập nhật hình ảnh</h2>
+              <div className="col-6">
+                <h3>CẬP NHẬT HÌNH ẢNH</h3>
               </div>
-
+              <div className="col-6">
+                <div className="d-flex justify-content-end">
+                  <Link to={`/banner`}>
+                    <CButton color="primary" type="submit" size="sm">
+                      Danh sách
+                    </CButton>
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="row">
               <div className="col-12">
                 <Form
                   form={form}
@@ -193,37 +218,39 @@ function EditBanner() {
                     <Input />
                   </Form.Item>
 
-                  <Form.Item
-                    name="picture"
-                    label="Upload"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: "Hình ảnh banner là bắt buộc!",
-                    //   },
-                    // ]}
-                  >
-                    <Upload
-                      listType="picture-card"
-                      maxCount={1}
-                      className="upload-news"
-                      previewFile={getBase64}
-                      defaultFileList={[
-                        {
-                          url: bannerData?.picture
-                            ? config.img + bannerData.picture
-                            : false,
-                        },
-                      ]}
-                      beforeUpload={false}
-                      name="logo"
-                      accept="png,jpeg,jpg"
-                    >
-                      <span>Tải hình ảnh</span>
-                    </Upload>
-                  </Form.Item>
+                  <div className="row">
+                    <div className="col-12">
+                      <CFormInput
+                        name="picture"
+                        type="file"
+                        id="formFile"
+                        label="Hình ảnh đại diện"
+                        onChange={(e) => onFileChange(e)}
+                        size="sm"
+                      />
+                      <br />
+                    </div>
+
+                    <div className="col-12">
+                      {file.length == 0 ? (
+                        <div>
+                          <CImage
+                            className="border"
+                            src={
+                              `http://192.168.245.180:8000/upload/` +
+                              selectedFile
+                            }
+                            width={200}
+                          />
+                        </div>
+                      ) : (
+                        file.map((item, index) => (
+                          <CImage key={index} src={item} width={200} />
+                        ))
+                      )}
+                    </div>
+                  </div>
+                  <br />
 
                   <Form.Item
                     label="Liên kết"

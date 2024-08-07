@@ -157,6 +157,7 @@ function Post() {
       title: "Tác vụ",
       dataIndex: "task",
       key: "task",
+      width: 150,
       render: (text, record) => {
         return (
           <div className="d-flex gap-2 align-items-center">

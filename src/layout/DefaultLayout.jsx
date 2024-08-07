@@ -60,12 +60,9 @@ function DefaultLayout() {
       <UserOutlined style={{ fontSize: 18 }} />,
       [getItem(<Link to="/student">Thông tin sinh viên</Link>, "7")]
     ),
-    getItem(
-      "Quản lý doanh nghiệp",
-      "8",
-      <BankOutlined style={{ fontSize: 18 }} />,
-      [getItem(<Link to="/sponsor">Quản lý mạnh thường quân</Link>, "9")]
-    ),
+    getItem("Quản lý MTQ góp", "8", <BankOutlined style={{ fontSize: 18 }} />, [
+      getItem(<Link to="/sponsor">Quản lý MTQ góp</Link>, "9"),
+    ]),
     getItem(
       "Quản lý tin tức",
       "10",

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import config from "../../../config";
 import axios from "axios";
 import "../../../css/AddNews.css";
+import { CButton, CCol, CContainer, CRow } from "@coreui/react";
 
 function Banner() {
   const navigate = useNavigate();
@@ -16,6 +17,15 @@ function Banner() {
 
   const [api, contextHolder] = notification.useNotification();
 
+  const [isCollapse, setIsCollapse] = useState(false);
+
+  // search input
+  const [dataSearch, setDataSearch] = useState("");
+
+  const handleToggleCollapse = () => {
+    setIsCollapse((prevState) => !prevState);
+  };
+
   const openNotificationWithIcon = (type) => {
     api[type]({
       message: "Xóa không thành công.",
@@ -23,13 +33,20 @@ function Banner() {
     });
   };
 
-  const onSearch = (value, _e, info) => setSearch(value);
+  const handleAddNewClick = () => {
+    navigate("/banner/add");
+  };
+
+  // search Data
+  const handleSearch = (keyword) => {
+    fetchBannerData(1, keyword);
+  };
 
   useEffect(() => {
     fetchBannerData();
-  }, [search, isDeleted]);
+  }, [isDeleted]);
 
-  const fetchBannerData = async (page) => {
+  const fetchBannerData = async (page = 1, dataSearch) => {
     setLoading(true);
     try {
       let headers = {
@@ -41,7 +58,7 @@ function Banner() {
         headers.Authorization = `Bearer ${token}`;
       }
       const res = await axios.get(
-        config.host + `/admin/banner?data=${search}&page=${page}`,
+        config.host + `/admin/banner?data=${dataSearch}&page=${page}`,
         {
           headers: headers,
         }
@@ -88,9 +105,8 @@ function Banner() {
       key: "STT",
       width: 60,
       render: (text, record, index) => {
-        return <span >{index + 1}</span>;
+        return <span>{index + 1}</span>;
       },
-      
     },
     {
       title: "Tiêu đề",
@@ -122,10 +138,13 @@ function Banner() {
       title: "Liên kết",
       dataIndex: "link",
       key: "link",
-      width: 60,
 
       render: (text, record) => {
-        return <Link target="_blank" title={record.url} to={record.url}>{record.url}</Link>;
+        return (
+          <Link target="_blank" title={record.url} to={record.url}>
+            {record.url}
+          </Link>
+        );
       },
       ellipsis: true,
     },
@@ -152,11 +171,14 @@ function Banner() {
       title: "Tác vụ",
       dataIndex: "task",
       key: "task",
+      width: 180,
       render: (text, record) => {
         return (
-          <div>
-            <Link to={`/banner/edit/${record.id}`}>Chi tiết</Link>
-            <div className="mt-3">
+          <div className="d-flex align-items-center">
+            <Link to={`/banner/edit/${record.id}`}>
+              <CButton size="sm">Chi tiết</CButton>
+            </Link>
+            <div className="ms-2">
               <Popconfirm
                 title="Bạn có chắc muốn xóa?"
                 onConfirm={() => handleDelete(record.id)}
@@ -175,28 +197,93 @@ function Banner() {
   return (
     <>
       {contextHolder}
-      <div>
-        <div className="mb-3">
-          <h2 style={{
-                  fontWeight: 700,
-                  textTransform: "uppercase"
-                }}>Quản lý hình ảnh</h2>
-          <Button onClick={() => navigate("/banner/add")} type="primary">
-            Thêm mới hình ảnh
-          </Button>
-        </div>
+      <CContainer>
+        <CRow className="mb-3">
+          <CCol md={6}>
+            <h3>QUẢN LÝ HÌNH ẢNH</h3>
+          </CCol>
+          <CCol md={6}>
+            <div className="d-flex justify-content-end">
+              <CButton
+                onClick={handleAddNewClick}
+                color="primary"
+                type="submit"
+                size="sm"
+                className="button-add"
+              >
+                Thêm mới
+              </CButton>
+              <Link to={`/banner`}>
+                <CButton
+                  color="primary"
+                  type="submit"
+                  size="sm"
+                  className="ms-2"
+                >
+                  Danh sách
+                </CButton>
+              </Link>
+            </div>
+          </CCol>
+        </CRow>
 
-        <div className="row">
-          <div className="col-12 mb-3">
-            <Search
-              placeholder="Tìm kiếm thông tin"
-              onSearch={onSearch}
-              enterButton
-            />
-          </div>
+        <CRow>
+          <CCol md={12}>
+            <table className="filter-table">
+              <thead>
+                <tr>
+                  <th colSpan="2">
+                    <div className="d-flex justify-content-between">
+                      <span>Bộ lọc tìm kiếm</span>
+                      <span
+                        className="toggle-pointer"
+                        onClick={handleToggleCollapse}
+                      >
+                        {isCollapse ? "▼" : "▲"}
+                      </span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              {!isCollapse && (
+                <tbody>
+                  <tr>
+                    <td>Tổng cộng</td>
+                    <td className="total-count">{total}</td>
+                  </tr>
 
+                  <tr>
+                    <td>Tìm kiếm</td>
+                    <td>
+                      <strong>
+                        <em>Tìm kiếm theo Tiêu đề</em>
+                      </strong>
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          className="search-input"
+                          value={dataSearch}
+                          onChange={(e) => setDataSearch(e.target.value)}
+                        />
+                        <button
+                          onClick={() => handleSearch(dataSearch)}
+                          className="submit-btn"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </CCol>
+        </CRow>
+
+        <CRow className="mt-3">
           <div className="col-12">
             <Table
+              bordered
               pagination={{
                 pageSize: 5,
                 total: total,
@@ -209,8 +296,8 @@ function Banner() {
               columns={columns}
             />
           </div>
-        </div>
-      </div>
+        </CRow>
+      </CContainer>
     </>
   );
 }

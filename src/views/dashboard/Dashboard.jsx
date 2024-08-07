@@ -185,7 +185,7 @@ function Dashboard() {
           </div>
 
           <div>
-            <h2>Danh sách mạnh thường quân đóng góp:</h2>
+            <h3>Danh sách mạnh thường quân đóng góp:</h3>
             <SponsorsList
               sponsorData={sponsorData}
               loading={sponsorLoading}
@@ -195,7 +195,7 @@ function Dashboard() {
           </div>
 
           <div>
-            <h2>Danh sách sinh viên đăng ký vay:</h2>
+            <h3>Danh sách người nhận học bổng:</h3>
             <StudentList
               studentData={studentData}
               loading={studentLoading}

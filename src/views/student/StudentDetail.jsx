@@ -119,6 +119,8 @@ function StudentDetail() {
   const [uploading, setUploading] = useState(false);
 
   const handleNewUpload = async () => {
+    console.log(111111);
+
     let headers = {
       "Content-Type": "multipart/form-data",
     };
@@ -169,65 +171,65 @@ function StudentDetail() {
     fileList,
   };
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     let headers = {
-  //       "Content-Type": "application/json",
-  //     };
-  //     const token = localStorage.getItem("adminvtnk");
+  const handleDelete = async (id) => {
+    try {
+      let headers = {
+        "Content-Type": "application/json",
+      };
+      const token = localStorage.getItem("adminvtnk");
 
-  //     if (token) {
-  //       headers.Authorization = `Bearer ${token}`;
-  //     }
-  //     const res = await axios.get(
-  //       config.host + `/admin/delete-student-pdf/${id}`,
-  //       {
-  //         headers: headers,
-  //       }
-  //     );
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      const res = await axios.get(
+        config.host + `/admin/delete-student-pdf/${id}`,
+        {
+          headers: headers,
+        }
+      );
 
-  //     if (res.data.status === true) {
-  //       message.success("Xóa file pdf hợp đồng thành công.");
-  //       const updateContractList = dataContracts.filter(
-  //         (item) => item.id !== id
-  //       );
-  //       setDataContracts(updateContractList);
-  //     } else {
-  //       message.error("Xóa file pdf hợp đồng thất bại.");
-  //     }
-  //   } catch (error) {
-  //     console.error("fail to fetch data.");
-  //   }
-  // };
+      if (res.data.status === true) {
+        message.success("Xóa file pdf hợp đồng thành công.");
+        const updateContractList = dataContracts.filter(
+          (item) => item.id !== id
+        );
+        setDataContracts(updateContractList);
+      } else {
+        message.error("Xóa file pdf hợp đồng thất bại.");
+      }
+    } catch (error) {
+      console.error("fail to fetch data.");
+    }
+  };
 
-  // const handleDowloadPdf = async () => {
-  //   let headers = {
-  //     "Content-Type": "application/json",
-  //   };
-  //   const token = localStorage.getItem("adminvtnk");
+  const handleDowloadPdf = async () => {
+    let headers = {
+      "Content-Type": "application/json",
+    };
+    const token = localStorage.getItem("adminvtnk");
 
-  //   if (token) {
-  //     headers.Authorization = `Bearer ${token}`;
-  //   }
-  //   await axios({
-  //     url: `${config.host}/admin/export-student-pdf/${studentId}`,
-  //     method: "GET",
-  //     responseType: "blob",
-  //     headers: headers,
-  //   })
-  //     .then((response) => {
-  //       const url = window.URL.createObjectURL(new Blob([response.data]));
-  //       const link = document.createElement("a");
-  //       link.href = url;
-  //       link.setAttribute("download", "hop-dong-vay.pdf");
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error);
-  //     });
-  // };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    await axios({
+      url: `${config.host}/admin/export-student-pdf/${studentId}`,
+      method: "GET",
+      responseType: "blob",
+      headers: headers,
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "hop-dong-vay.pdf");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   const data = dataContracts?.map((item) => ({
     id: item.id,
@@ -253,7 +255,7 @@ function StudentDetail() {
       ) : (
         <CContainer>
           <CRow>
-            <CCol>
+            <CCol md={12}>
               <div className="d-flex justify-content-between align-items-center">
                 <h3>THÔNG TIN NGƯỜI NHẬN</h3>
                 {/* <Button
@@ -287,60 +289,62 @@ function StudentDetail() {
                   Cập nhật
                 </Button>
               </div>
+            </CCol>
 
-              {/* <div className="mb-5">
-            <h5 style={{ textTransform: "uppercase" }}>Upload file hợp đồng</h5>
-            <div className="mt-3">
-              <Upload {...props} accept=".pdf">
-                <Button icon={<UploadOutlined />}>Select File</Button>
-              </Upload>
-              <Button
-                type="primary"
-                onClick={handleNewUpload}
-                disabled={fileList.length === 0}
-                loading={uploading}
-                style={{ marginTop: 16 }}
-              >
-                {uploading ? "Uploading" : "Start Upload"}
-              </Button>
-            </div>
-          </div>
-          <div className="mb-5">
-            <h5 style={{ textTransform: "uppercase" }}>Danh sách hợp đồng</h5>
-            <List
-              itemLayout="horizontal"
-              dataSource={data}
-              renderItem={(item, index) => (
-                <List.Item
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                  }}
-                >
-                  <List.Item.Meta
-                    style={{ maxWidth: "600px" }}
-                    title={
-                      <a
-                        target="blank
+            <CCol md={12}>
+              <div className="mb-5">
+                <h5>Danh sách Hợp đồng đã ký</h5>
+                <div className="mt-3">
+                  <Upload {...props} accept=".pdf">
+                    <Button icon={<UploadOutlined />}>Chọn file</Button>
+                  </Upload>
+                  <Button
+                    type="primary"
+                    onClick={handleNewUpload}
+                    disabled={fileList.length === 0}
+                    loading={uploading}
+                    style={{ marginTop: 16 }}
+                  >
+                    {uploading ? "Đang upload file" : "Upload hợp đồng"}
+                  </Button>
+                </div>
+              </div>
+              <div className="mb-5">
+                <List
+                  itemLayout="horizontal"
+                  dataSource={data}
+                  renderItem={(item, index) => (
+                    <List.Item
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "start",
+                      }}
+                    >
+                      <List.Item.Meta
+                        style={{ maxWidth: "600px" }}
+                        title={
+                          <a
+                            target="blank
                       "
-                        href={`${config.contract}${item.url}`}
-                      >
-                        {item.name}
-                      </a>
-                    }
-                    description={`Ngày upload: ${item.createDate}`}
-                  />
-                </List.Item>
-              )}
-            />
-          </div> */}
-
-              {/* <DebtMoney
-            nameStudent={detailStudent?.nameMember}
-            studentId={studentId}
-            propLoanChange={setIsLoanChange}
-          /> */}
+                            href={`${config.contract}${item.url}`}
+                          >
+                            {item.name}
+                          </a>
+                        }
+                        description={`Ngày upload: ${item.createDate}`}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </div>
+            </CCol>
+            <CCol md={12}>
+              <DebtMoney
+                nameStudent={detailStudent?.nameMember}
+                studentId={studentId}
+                propLoanChange={setIsLoanChange}
+              />
             </CCol>
           </CRow>
         </CContainer>
