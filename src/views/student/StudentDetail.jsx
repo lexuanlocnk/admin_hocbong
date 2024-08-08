@@ -19,6 +19,7 @@ import config from "../../config";
 import { useForm } from "antd/es/form/Form";
 import { UploadOutlined } from "@ant-design/icons";
 import { CCol, CContainer, CRow } from "@coreui/react";
+import TableTaskStudent from "./tableTaskStudent";
 
 function StudentDetail() {
   const [checkGuardian, setCheckGuardian] = useState(1);
@@ -119,8 +120,6 @@ function StudentDetail() {
   const [uploading, setUploading] = useState(false);
 
   const handleNewUpload = async () => {
-    console.log(111111);
-
     let headers = {
       "Content-Type": "multipart/form-data",
     };
@@ -339,6 +338,11 @@ function StudentDetail() {
                 />
               </div>
             </CCol>
+
+            <CCol md={12}>
+              <TableTaskStudent id={studentId} />
+            </CCol>
+
             <CCol md={12}>
               <DebtMoney
                 nameStudent={detailStudent?.nameMember}

@@ -92,7 +92,7 @@ function StudentForm({
             <Input />
           </Form.Item> */}
 
-            <Form.Item label="Lý do vay:" name="loanReason">
+            <Form.Item label="Lý do nhận học bổng:" name="loanReason">
               <TextArea
                 rows={4}
                 onChange={(e) => propLoanReason(e.target.value)}

@@ -15,8 +15,29 @@ function StudentInfo() {
 
   // search input
   const [dataSearch, setDataSearch] = useState("");
+  const [valueInputExcel, setValueInputExcel] = useState({
+    value: "",
+    error: "",
+  });
 
   const [isCollapse, setIsCollapse] = useState(false);
+
+  const handleChangeInputExcel = (e) => {
+    const numericValue = e.target.value.replace(/[^0-9]/g, "");
+
+    let error = "";
+    if (numericValue && numericValue[0] !== "0") {
+      error = "Số điện thoại phải bắt đầu bằng số 0";
+    } else if (numericValue.length > 10) {
+      error = "Số điện thoại không được quá 10 chữ số";
+    }
+
+    if (numericValue.length <= 10) {
+      setValueInputExcel({ value: numericValue, error });
+    } else {
+      setValueInputExcel((prevState) => ({ ...prevState, error }));
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -54,6 +75,30 @@ function StudentInfo() {
   // search Data
   const handleSearch = (keyword) => {
     fetchData(1, keyword);
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await axios({
+        url: `${config.host}/student-export`,
+        data: valueInputExcel,
+        method: "post",
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "danh-sach-sinh-vien.xlsx"); // Đặt tên file tải về
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // Dọn dẹp URL Blob
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting data", error);
+    }
   };
 
   const columns = [
@@ -170,6 +215,33 @@ function StudentInfo() {
                   <td>Tổng cộng</td>
                   <td className="total-count">{total}</td>
                 </tr>
+                <tr>
+                  <td>Bộ lọc xuất Excel</td>
+                  <td className="">
+                    <div>
+                      <strong>
+                        <em>Nhập SĐT của mạnh thường quân để xuất excel</em>
+                      </strong>
+                      <input
+                        type="text"
+                        className="search-input"
+                        value={valueInputExcel.value}
+                        onChange={handleChangeInputExcel}
+                      />{" "}
+                      <button
+                        onClick={handleExportExcel}
+                        className="submit-btn"
+                      >
+                        Xuất excel
+                      </button>
+                      {valueInputExcel && valueInputExcel.error && (
+                        <div>
+                          <span className="error">{valueInputExcel.error}</span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
 
                 <tr>
                   <td>Tìm kiếm</td>
@@ -191,7 +263,7 @@ function StudentInfo() {
                         onClick={() => handleSearch(dataSearch)}
                         className="submit-btn"
                       >
-                        Submit
+                        Tìm kiếm
                       </button>
                     </div>
                   </td>

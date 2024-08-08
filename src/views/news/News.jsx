@@ -13,6 +13,7 @@ function News() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState("");
+  const [typeNews, setTypeNews] = useState("");
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -35,7 +36,7 @@ function News() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-  }, []);
+  }, [typeNews]);
 
   const fetchData = async (page) => {
     try {
@@ -48,7 +49,8 @@ function News() {
         headers.Authorization = `Bearer ${token}`;
       }
       const res = await axios.get(
-        config.host + `/admin/news?data=${search}&page=${page}`,
+        config.host +
+          `/admin/news?data=${search}&page=${page}&cateNews=${typeNews ?? ""}`,
         {
           headers: headers,
         }
@@ -89,6 +91,9 @@ function News() {
 
   const handleAddNewClick = () => {
     navigate("/news/add");
+  };
+  const onChangeNews = (e) => {
+    setTypeNews(e.target.value);
   };
 
   // search Data
@@ -232,11 +237,14 @@ function News() {
                     <td>Lọc theo danh mục</td>
                     <td>
                       <CFormSelect
+                        onChange={onChangeNews}
                         className="component-size w-25"
                         aria-label="Chọn yêu cầu lọc"
                         options={[
-                          { label: "Tin nội bộ", value: "0" },
-                          { label: "Tin hoạt động", value: "1" },
+                          { label: "Tất cả ", value: "" },
+
+                          { label: "Tin nội bộ", value: "1" },
+                          { label: "Tin hoạt động", value: "2" },
                         ]}
                       />
                     </td>

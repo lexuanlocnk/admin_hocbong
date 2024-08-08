@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import NumberInput from "../../components/inputNumberAntd";
 import { UploadOutlined } from "@ant-design/icons";
 import { CCol, CContainer, CRow } from "@coreui/react";
-
+ 
 function SponsorDetail() {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
@@ -213,36 +213,34 @@ function SponsorDetail() {
     } catch (error) {}
   };
 
-  console.log();
+  // const handleDowloadPdf = async () => {
+  //   let headers = {
+  //     "Content-Type": "application/json",
+  //   };
+  //   const token = localStorage.getItem("adminvtnk");
 
-  const handleDowloadPdf = async () => {
-    let headers = {
-      "Content-Type": "application/json",
-    };
-    const token = localStorage.getItem("adminvtnk");
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    await axios({
-      url: `${config.host}/admin/export-pdf/${sponsorId}`,
-      method: "GET",
-      responseType: "blob",
-      headers: headers,
-    })
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "hop-dong-tai-tro.pdf");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  //   if (token) {
+  //     headers.Authorization = `Bearer ${token}`;
+  //   }
+  //   await axios({
+  //     url: `${config.host}/admin/export-pdf/${sponsorId}`,
+  //     method: "GET",
+  //     responseType: "blob",
+  //     headers: headers,
+  //   })
+  //     .then((response) => {
+  //       const url = window.URL.createObjectURL(new Blob([response.data]));
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.setAttribute("download", "hop-dong-tai-tro.pdf");
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
+  // };
 
   const data = dataContracts?.map((item) => ({
     id: item.id,

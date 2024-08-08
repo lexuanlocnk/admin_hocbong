@@ -77,7 +77,7 @@ function StudentList({ studentData, loading, setCurrentPage }) {
       <Column title="Tên sinh viên" dataIndex="name" key="name" />
       <Column title="Số điện thoại" dataIndex="tel" key="tel" />
       {/* <Column
-        title="Lý do vay"
+        title="Lý do nhận học bổng"
         dataIndex="reason_debt"
         key="reason_debt"
         ellipsis={true}

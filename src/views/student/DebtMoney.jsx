@@ -173,13 +173,13 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
     }
   };
 
-  const checkPrice = (_, value) => {
-    console.log(value);
-    if (value.number > 0) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Price must be greater than zero!"));
-  };
+  // const checkPrice = (_, value) => {
+  //   console.log(value);
+  //   if (value.number > 0) {
+  //     return Promise.resolve();
+  //   }
+  //   return Promise.reject(new Error("Price must be greater than zero!"));
+  // };
 
   const props = {
     onRemove: (file) => {
@@ -272,7 +272,7 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
                   name="amountPaid"
                   rules={[
                     {
-                      validator: checkPrice,
+                      // validator: checkPrice,
 
                       required: true,
                       message: "Hãy nhập số tiền đã trả!",
