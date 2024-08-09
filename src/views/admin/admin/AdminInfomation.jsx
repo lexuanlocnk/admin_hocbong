@@ -352,6 +352,30 @@ function AddInfomation() {
                           </div>
                         </td>
                       </tr>
+
+                      <tr>
+                        <td>Quản lý nhiệm vụ</td>
+                        <td>
+                          <div className="d-flex justify-content-around align-items-center">
+                            {permissionsTotal.task?.map((item) => (
+                              <div>
+                                <div
+                                  key={item.name}
+                                  style={{ marginRight: "30px" }}
+                                >
+                                  <CFormCheck
+                                    id="flexCheckDefault"
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions.some(
+                                      (itemx) => itemx.id === item.id
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
                   )}
                 </table>

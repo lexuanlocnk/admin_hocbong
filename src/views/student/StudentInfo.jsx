@@ -6,6 +6,7 @@ import config from "../../config";
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
 import { CButton, CCol, CContainer, CFormSelect, CRow } from "@coreui/react";
+import { currentcyFormat } from "../../services/currencyFormat";
 
 function StudentInfo() {
   const navigate = useNavigate();
@@ -40,7 +41,6 @@ function StudentInfo() {
   };
 
   useEffect(() => {
-    setLoading(true);
     fetchData(1);
   }, []);
 
@@ -54,17 +54,25 @@ function StudentInfo() {
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
+
+      setLoading(true);
+
       const res = await axios.get(
         config.host + `/admin/student?page=${page}&data=${dataSearch}`,
         {
           headers: headers,
         }
       );
-      setStudentData(res.data.dataStudent.reverse());
-      setLoading(false);
-      setTotal(res.data.count);
+      if (res.data.status === true) {
+        setStudentData(res.data.dataStudent.reverse());
+        setTotal(res.data.count);
+      } else {
+        setLoading(false);
+      }
     } catch (error) {
       console.error("fetch data error", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,9 +146,9 @@ function StudentInfo() {
       title: "Số lần nhận",
       dataIndex: "reasonLoan",
       key: "reasonLoan",
-      // render: (text, record) => {
-      //   return <span>{record.reason}</span>;
-      // },
+      render: (text, record) => {
+        return <span>{record.count}</span>;
+      },
     },
     // {
     //   title: "Số tiền vay",
@@ -150,13 +158,14 @@ function StudentInfo() {
     //     return <span>{record.loan}</span>;
     //   },
     // },
+
     {
-      title: "Lần nhận gần nhất",
+      title: "Tổng tiền nhận",
       dataIndex: "refundTime",
       key: "refundTime",
-      // render: (text, record) => {
-      //   return <span>{dayjs(record.deadline).format("DD/MM/YYYY")}</span>;
-      // },
+      render: (text, record) => {
+        return <span>{currentcyFormat(record?.sum)}</span>;
+      },
     },
 
     {
@@ -220,7 +229,10 @@ function StudentInfo() {
                   <td className="">
                     <div>
                       <strong>
-                        <em>Nhập SĐT của mạnh thường quân để xuất excel</em>
+                        <em>
+                          Nhập SĐT của mạnh thường quân/ người giới thiệu để
+                          xuất excel
+                        </em>
                       </strong>
                       <input
                         type="text"

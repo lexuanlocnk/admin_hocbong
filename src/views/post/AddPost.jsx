@@ -15,13 +15,12 @@ import { Link } from "react-router-dom";
 
 import axios from "axios";
 import CKedtiorCustom from "../../components/customEditor/customEditor";
-import { DatePicker, message } from "antd";
+import { DatePicker, message, notification } from "antd";
 import moment from "moment";
 import config from "../../config";
 import { cibKlout } from "@coreui/icons";
 
 function AddPost() {
-  const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = useState("");
 
   const initialValues = {
@@ -30,6 +29,15 @@ function AddPost() {
     metaKeyword: "",
     metaDesc: "",
     visible: 0,
+  };
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Thêm thông tin không thành công.",
+      description: "Bạn không có quyền thực hiện tác vụ này.",
+    });
   };
 
   const [startDate, setStartDate] = useState(null);
@@ -89,17 +97,14 @@ function AddPost() {
       );
 
       if (response.data.status === true) {
-        messageApi.open({
-          type: "success",
-          content: "Thêm mới nhiệm vụ thành công!",
-        });
+        message.success("Thêm mới nhiệm vụ thành công!");
+      } else if ((response.data.mess = "no permission")) {
+        openNotificationWithIcon("warning");
+      } else {
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
     } catch (error) {
       console.log("Post data tast is error", error);
-      messageApi.open({
-        type: "error",
-        content: "Đã xảy ra lỗi. Vui lòng thử lại!",
-      });
     }
   };
 

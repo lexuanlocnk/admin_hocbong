@@ -135,7 +135,7 @@ function Dashboard() {
                     fontWeight: 600,
                   }}
                 >
-                  {currencyFormat(dashboardData.totalFund)}
+                  {currencyFormat(dashboardData.totalMember)}
                 </Card>
               </Col>
               <Col span={8}>
@@ -167,7 +167,7 @@ function Dashboard() {
                 </Card>
               </Col>
 
-              <Col span={8}>
+              {/* <Col span={8}>
                 <Card
                   title="Tổng tiền cam kết góp"
                   bordered={false}
@@ -180,7 +180,7 @@ function Dashboard() {
                 >
                   {currencyFormat(dashboardData.commitmentMoney)}
                 </Card>
-              </Col>
+              </Col> */}
             </Row>
           </div>
 

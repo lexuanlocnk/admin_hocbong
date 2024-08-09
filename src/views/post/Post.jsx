@@ -1,5 +1,5 @@
 import { CButton, CCol, CContainer, CFormSelect, CRow } from "@coreui/react";
-import { DatePicker, message, Popconfirm, Table } from "antd";
+import { DatePicker, message, notification, Popconfirm, Table } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,7 +8,6 @@ import axios from "axios";
 
 function Post() {
   const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
 
   const [dataTask, setDataTask] = useState([]);
 
@@ -19,40 +18,21 @@ function Post() {
   // search input
   const [dataSearch, setDataSearch] = useState("");
 
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Xóa không thành công.",
+      description: "Bạn không có quyền thực hiện tác vụ này.",
+    });
+  };
+
   const handleAddNewClick = () => {
     navigate("/post/add");
   };
 
   const handleToggleCollapse = () => {
     setIsCollapse((prevState) => !prevState);
-  };
-
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [error, setError] = useState("");
-
-  const validateDates = (start, end) => {
-    if (!start || !end) {
-      return "Vui lòng chọn cả hai ngày.";
-    }
-    if (end.isBefore(start)) {
-      return "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.";
-    }
-    return "";
-  };
-
-  const onChangeStartDate = (date, dateString) => {
-    const start = date ? moment(dateString, "DD/MM/YYYY") : null;
-    setStartDate(start);
-    const errorMsg = validateDates(start, endDate);
-    setError(errorMsg);
-  };
-
-  const onChangeEndDate = (date, dateString) => {
-    const end = date ? moment(dateString, "DD/MM/YYYY") : null;
-    setEndDate(end);
-    const errorMsg = validateDates(startDate, end);
-    setError(errorMsg);
   };
 
   // search Data
@@ -64,7 +44,7 @@ function Post() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${config.host}/admin/task?page=${page}&data=${dataSearch}&fromDate=${startDate}&EndDate =${endDate}`,
+        `${config.host}/admin/task?page=${page}&data=${dataSearch}`,
         {
           headers: config.headers,
         }
@@ -84,7 +64,7 @@ function Post() {
 
   useEffect(() => {
     fetchPostData();
-  }, [startDate, endDate]);
+  }, []);
 
   const handleDelete = async (id) => {
     try {
@@ -94,6 +74,10 @@ function Post() {
       if (res.data.status === true) {
         message.success("Xóa nhiệm vụ thành công!");
         fetchPostData();
+      } else if (res.data.mess == "no permission") {
+        openNotificationWithIcon("warning");
+      } else {
+        message.info("Không thể xóa tin tức. Vui lòng thử lại!");
       }
     } catch (error) {
       console.error("Deleted task is error");
@@ -240,23 +224,6 @@ function Post() {
                     <td className="total-count">{dataTask?.total}</td>
                   </tr>
 
-                  <tr>
-                    <td>Tạo từ ngày</td>
-                    <td>
-                      <div className="d-flex gap-2 align-items-center">
-                        <DatePicker
-                          format={"DD/MM/YYYY"}
-                          onChange={onChangeStartDate}
-                        />
-                        {"đến ngày"}
-                        <DatePicker
-                          format={"DD/MM/YYYY"}
-                          onChange={onChangeEndDate}
-                        />
-                      </div>
-                      {error && <div style={{ color: "red" }}>{error}</div>}
-                    </td>
-                  </tr>
                   <tr>
                     <td>Tìm kiếm</td>
                     <td>

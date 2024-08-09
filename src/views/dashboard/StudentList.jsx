@@ -56,8 +56,8 @@ function StudentList({ studentData, loading, setCurrentPage }) {
       name: item.nameMember,
       tel: item.phoneMember,
       reason_debt: item.reason,
-      debt_amount: `${currencyFormat(item.loan)}`,
-      refund_period: `${dayjs(item.deadline).format("DD/MM/YYYY")}`,
+      debt_amount: `${currencyFormat(item.sum)}`,
+      refund_period: item?.count,
     }));
 
   return (
@@ -83,15 +83,16 @@ function StudentList({ studentData, loading, setCurrentPage }) {
         ellipsis={true}
       /> */}
       <Column
-        title="Tổng tiền nhận"
-        dataIndex="debt_amount"
-        key="debt_amount"
-      />
-      <Column
-        title="Lần nhận gần nhất"
+        title="Số lần nhận"
         dataIndex="refund_period"
         key="refund_period"
         render={(text) => <div>{text}</div>}
+      />
+
+      <Column
+        title="Tổng tiền nhận"
+        dataIndex="debt_amount"
+        key="debt_amount"
       />
 
       <Column

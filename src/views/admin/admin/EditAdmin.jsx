@@ -653,6 +653,61 @@ function EditAdmin() {
                           </div>
                         </td>
                       </tr>
+
+                      {/* quan ly task */}
+                      <tr>
+                        <td>
+                          <CFormCheck
+                            id="postCheckbox"
+                            label={"Quản lí nhiệm vụ"}
+                            checked={categoriesPermission?.includes(7)}
+                            onChange={(e) => {
+                              const idx = 7;
+                              const isChecked = e.target.checked;
+                              if (isChecked) {
+                                setCategoriesPermission([
+                                  ...categoriesPermission,
+                                  idx,
+                                ]);
+                              } else {
+                                setCategoriesPermission(
+                                  categoriesPermission.filter(
+                                    (item) => item !== idx
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-around">
+                            {permissionsTotal.task?.map((item) => (
+                              <div key={item.id}>
+                                <div key={item.name}>
+                                  <CFormCheck
+                                    id={`flexCheckDefault_${item.id}`}
+                                    label={getTitle(item.name)[1]}
+                                    checked={permissions?.includes(item.id)}
+                                    onChange={(e) => {
+                                      const idDe = item.id;
+                                      const isChecked = e.target.checked;
+                                      if (isChecked) {
+                                        setPermissions([...permissions, idDe]);
+                                      } else {
+                                        setPermissions(
+                                          permissions.filter(
+                                            (id) => id !== idDe
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
                   )}
                 </table>

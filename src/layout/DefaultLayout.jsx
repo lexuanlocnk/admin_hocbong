@@ -5,6 +5,7 @@ import {
   FileTextOutlined,
   UserOutlined,
   PictureOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 
 import { Layout, Menu, theme } from "antd";
@@ -93,13 +94,15 @@ function DefaultLayout() {
         getItem(<Link to="/banner-pos/add">Thêm vị trí</Link>, "20"),
       ]
     ),
+
     getItem(
-      "Quản lý bài đăng",
+      "Quản lý nhiệm vụ",
       "21",
-      <PictureOutlined style={{ fontSize: 18 }} />,
+
+      <FileDoneOutlined style={{ fontSize: 18 }} />,
       [
-        getItem(<Link to="/banner">Quản lý bài đăng</Link>, "22"),
-        getItem(<Link to="/banner/add">Thêm mới nhiệm vụ</Link>, "23"),
+        getItem(<Link to="/post">Quản lý nhiệm vụ</Link>, "22"),
+        getItem(<Link to="/post/add">Thêm mới nhiệm vụ</Link>, "23"),
       ]
     ),
   ];

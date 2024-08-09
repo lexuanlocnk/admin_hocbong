@@ -73,6 +73,12 @@ function AddAdmin() {
     return name.split(".");
   };
 
+  console.log(">>>> cehck data :", {
+    permissions,
+    categoryPermissions,
+    permissionsTotal,
+  });
+
   //set img detail
   function onFileChange(e) {
     const files = e.target.files;
@@ -618,6 +624,69 @@ function AddAdmin() {
                       {categoryPermissions.includes(6) && (
                         <div className="col-9 d-flex">
                           {permissionsTotal.banner?.map((item, index) => (
+                            <div key={item.id}>
+                              <div
+                                key={item.name}
+                                style={{ marginRight: "30px" }}
+                              >
+                                <CFormCheck
+                                  id="flexCheckDefault"
+                                  label={getTitle(item.name)[1]}
+                                  checked={permissions.includes(item)}
+                                  onChange={(e) => {
+                                    const idDe = item.id;
+                                    const isChecked = e.target.checked;
+                                    if (isChecked) {
+                                      setPermissions([...permissions, item]);
+                                    } else {
+                                      setPermissions(
+                                        permissions.filter(
+                                          (item) => item.id !== idDe
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* quan tri task */}
+                  <tr>
+                    <td>
+                      <CFormCheck
+                        id="flexCheckDefault"
+                        label={"Quản lý nhiệm vụ"}
+                        checked={categoryPermissions?.includes(7)}
+                        onChange={(e) => {
+                          const idx = 7;
+                          const isChecked = e.target.checked;
+                          if (isChecked) {
+                            setCategoryPermissions([
+                              ...categoryPermissions,
+                              idx,
+                            ]);
+                          } else {
+                            const updatePermission = permissions.filter(
+                              (item) => item.guard_name != 7
+                            );
+
+                            setPermissions(updatePermission);
+                            setCategoryPermissions(
+                              categoryPermissions.filter((id) => id !== idx)
+                            );
+                          }
+                        }}
+                      />
+                    </td>
+                    <td>
+                      {categoryPermissions.includes(7) && (
+                        <div className="col-9 d-flex">
+                          {permissionsTotal.task?.map((item, index) => (
                             <div key={item.id}>
                               <div
                                 key={item.name}

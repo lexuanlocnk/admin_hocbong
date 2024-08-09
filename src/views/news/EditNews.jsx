@@ -17,7 +17,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import axios from "axios";
 import CKedtiorCustom from "../../components/customEditor/customEditor";
-import { message } from "antd";
+import { message, notification } from "antd";
 import config from "../../config";
 
 function AddPost() {
@@ -25,8 +25,16 @@ function AddPost() {
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("news_id");
 
-  const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = useState("");
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Thêm thông tin không thành công.",
+      description: "Bạn không có quyền thực hiện tác vụ này.",
+    });
+  };
 
   // upload image and show image
   const [selectedFile, setSelectedFile] = useState("");
@@ -133,17 +141,15 @@ function AddPost() {
         }
       );
       if (response.data.status === true) {
-        messageApi.open({
-          type: "success",
-          content: "Cập nhật tin tức thành công!",
-        });
+        message.success("Cập nhật tin tức thành công!");
+      } else if ((response.data.mess = "no permission")) {
+        openNotificationWithIcon("warning");
+      } else {
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
     } catch (error) {
       console.log("Put data news is error", error);
-      messageApi.open({
-        type: "error",
-        content: "Đã xảy ra lỗi. Vui lòng thử lại!",
-      });
+      // message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
     }
   };
 

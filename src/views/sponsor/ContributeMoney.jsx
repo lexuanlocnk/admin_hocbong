@@ -202,7 +202,7 @@ const ContributeMoney = ({
     <>
       {contextHolder}
       <div>
-        <h3>Quản LÝ TIỀN GÓP</h3>
+        <h3>QUẢN LÝ TIỀN GÓP</h3>
         <div className="w-100">
           <div className="d-flex align-items-center justify-content-between">
             <Button

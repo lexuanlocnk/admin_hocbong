@@ -13,6 +13,7 @@ function StudentForm({
   form,
   onFinish,
   isLoanChange,
+  memberInfo,
   loanValue,
 }) {
   function isEmptyObject(obj) {
@@ -24,7 +25,7 @@ function StudentForm({
   }
 
   useEffect(() => {
-    if (isEmptyObject(detailStudent) == false) {
+    if (isEmptyObject(detailStudent) === false) {
       form.setFieldsValue({
         studentName: detailStudent.nameMember,
         studentAddress: detailStudent.addressMember,
@@ -37,6 +38,14 @@ function StudentForm({
         studentEmail: detailStudent.emailMember,
         loanReason: detailStudent.reason,
         status: detailStudent.status,
+      });
+    }
+
+    if (isEmptyObject(memberInfo) === false) {
+      form.setFieldsValue({
+        member: memberInfo?.username,
+        phoneMember: memberInfo?.phoneCompany,
+        emailMember: memberInfo?.email,
       });
     }
   }, []);
@@ -88,9 +97,25 @@ function StudentForm({
               <Input readOnly={true} />
             </Form.Item>
 
+            <h5>Thông tin người giới thiệu</h5>
+
+            <Form.Item label="Người giới thiệu:" name="member">
+              <Input readOnly={true} />
+            </Form.Item>
+
+            <Form.Item label="Số điện thoại:" name="phoneMember">
+              <Input readOnly={true} />
+            </Form.Item>
+
+            <Form.Item label="Email liên hệ:" name="emailMember">
+              <Input readOnly={true} />
+            </Form.Item>
+
             {/* <Form.Item label="Số tiền vay:" name="studentDebt">
             <Input />
           </Form.Item> */}
+
+            <h5>Xét duyệt tài khoản đăng ký nhận học bổng</h5>
 
             <Form.Item label="Lý do nhận học bổng:" name="loanReason">
               <TextArea

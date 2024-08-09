@@ -24,6 +24,7 @@ import TableTaskStudent from "./tableTaskStudent";
 function StudentDetail() {
   const [checkGuardian, setCheckGuardian] = useState(1);
   const [detailStudent, setDetailStudent] = useState([]);
+  const [memberInfo, setMemberInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [loanValue, setLoanValue] = useState("");
 
@@ -66,6 +67,7 @@ function StudentDetail() {
         }
       );
       setDetailStudent(res.data.data);
+      setMemberInfo(res.data.member);
       setDataContracts(res.data.dataContract);
 
       setCheckGuardian(res.data.relationship);
@@ -274,6 +276,7 @@ function StudentDetail() {
               <StudentForm
                 form={form}
                 detailStudent={detailStudent}
+                memberInfo={memberInfo}
                 propStatus={setStatus}
                 onFinish={handleFinish}
                 // loanValue={loanValue}

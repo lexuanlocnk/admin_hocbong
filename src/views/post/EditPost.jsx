@@ -15,7 +15,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 import axios from "axios";
 import CKedtiorCustom from "../../components/customEditor/customEditor";
-import { DatePicker, message } from "antd";
+import { DatePicker, message, notification } from "antd";
 import moment from "moment";
 import config from "../../config";
 
@@ -24,7 +24,6 @@ function EditPost() {
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("task_id");
 
-  const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = useState("");
 
   const [initialValues, setInitialValues] = useState({
@@ -34,6 +33,15 @@ function EditPost() {
     metaDesc: "",
     visible: 0,
   });
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Thêm thông tin không thành công.",
+      description: "Bạn không có quyền thực hiện tác vụ này.",
+    });
+  };
 
   const validationSchema = Yup.object({
     title: Yup.string()
@@ -120,17 +128,14 @@ function EditPost() {
       );
 
       if (response.data.status === true) {
-        messageApi.open({
-          type: "success",
-          content: "Cập nhật nhiệm vụ thành công!",
-        });
+        message.success("Cập nhật nhiệm vụ thành công!");
+      } else if ((response.data.mess = "no permission")) {
+        openNotificationWithIcon("warning");
+      } else {
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
     } catch (error) {
       console.log("Put data task is error", error);
-      messageApi.open({
-        type: "error",
-        content: "Đã xảy ra lỗi. Vui lòng thử lại!",
-      });
     }
   };
 

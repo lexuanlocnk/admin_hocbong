@@ -112,8 +112,15 @@ function SponsorsList() {
       title: "Tác vụ",
       dataIndex: "task",
       key: "task",
+      width: 120,
       render: (text, record) => {
-        return <Link to={`/sponsor/detail/${record.id}`}>Chi tiết</Link>;
+        return (
+          <Link to={`/sponsor/detail/${record.id}`}>
+            <CButton size="sm" color="primary">
+              Chi tiết
+            </CButton>
+          </Link>
+        );
       },
     },
   ];

@@ -79,7 +79,7 @@ function News() {
       if (res.data.status === true) {
         message.success("Xóa tin tức thành công!");
         fetchData();
-      } else if ((res.data.mess = "no permission")) {
+      } else if (res.data.mess == "no permission") {
         openNotificationWithIcon("warning");
       } else {
         message.info("Không thể xóa tin tức. Vui lòng thử lại!");
