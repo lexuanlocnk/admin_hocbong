@@ -18,6 +18,7 @@ import config from "../../config";
 import { currentcyFormat } from "../../services/currencyFormat";
 import InputNumberCustom from "../../components/inputNumberCustom";
 import { UploadOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const ContributeMoney = ({
   nameMember,
@@ -146,17 +147,20 @@ const ContributeMoney = ({
       key: "receiptCode",
     },
     {
-      title: "Số tiền góp",
+      title: "Số tiền góp quỹ",
       dataIndex: "fundMoneyReal",
       key: "realAmount",
       render: (text, record) => {
-        return record.fundMoneyReal;
+        return currentcyFormat(record.fundMoneyReal);
       },
     },
     {
-      title: "Ngày góp",
-      dataIndex: "dates",
+      title: "Ngày tạo phiếu",
+      dataIndex: "dateContribute",
       key: "dateContribute",
+      render: (text, record) => {
+        return moment(record?.dates).format("DD-MM-YYYY, hh:mm:ss A");
+      },
     },
     {
       title: "Bản scan PDF phiếu thu",

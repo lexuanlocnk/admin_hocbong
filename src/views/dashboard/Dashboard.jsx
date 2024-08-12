@@ -163,24 +163,9 @@ function Dashboard() {
                     fontWeight: 600,
                   }}
                 >
-                  {currencyFormat(dashboardData.totalPaid)}
+                  {currencyFormat(dashboardData.totalMoneyPaid)}
                 </Card>
               </Col>
-
-              {/* <Col span={8}>
-                <Card
-                  title="Tổng tiền cam kết góp"
-                  bordered={false}
-                  style={{
-                    backgroundColor: dashboardColors.totalCommitment,
-                    color: "white",
-                    fontSize: "28px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {currencyFormat(dashboardData.commitmentMoney)}
-                </Card>
-              </Col> */}
             </Row>
           </div>
 

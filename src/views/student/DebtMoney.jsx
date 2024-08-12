@@ -7,18 +7,20 @@ import {
   Form,
   Input,
   message,
-  InputNumber,
   notification,
   Row,
   Col,
   Upload,
   Tooltip,
+  DatePicker,
 } from "antd";
 import axios from "axios";
 import config from "../../config";
 import InputNumberCustom from "../../components/inputNumberCustom";
 import { UploadOutlined } from "@ant-design/icons";
 import { CCol, CContainer, CRow } from "@coreui/react";
+import moment from "moment";
+import { currentcyFormat } from "../../services/currencyFormat";
 
 const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   const [checkUpdateTable, setCheckUpdateTable] = useState(false);
@@ -29,6 +31,8 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   const [total, setTotal] = useState("");
 
   const [amountPaid, setAmountPaid] = useState(0);
+  const [receivedDate, setReceivedDate] = useState(null);
+
   // check new upload
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -85,11 +89,6 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
   };
 
   const columns = [
-    // {
-    //   title: "Tên sinh viên	",
-    //   dataIndex: "nameMember",
-    //   key: "nameStudent",
-    // },
     {
       title: "Mã phiếu thu	",
       dataIndex: "code",
@@ -97,14 +96,28 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
     },
     {
       title: "Số tiền đã nhận",
-      dataIndex: "moneyPaid",
+      dataIndex: "amountPaid",
       key: "amountPaid",
+      render: (text, record) => {
+        return currentcyFormat(record?.moneyPaid);
+      },
     },
     {
-      title: "Ngày khởi tạo",
+      title: "Ngày thực nhận",
+      dataIndex: "receiveDates",
+      key: "receiveDates",
+      render: (text, record) => {
+        return moment
+          .unix(parseInt(record?.datesReceived))
+          .format("DD-MM-YYYY");
+      },
+    },
+    {
+      title: "Ngày tạo phiếu",
       dataIndex: "dates",
       key: "payDay",
     },
+
     {
       title: "Bản scan PDF phiếu thu",
       dataIndex: "contract",
@@ -130,6 +143,10 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
     setIsModalAddInfoOpen(true);
   };
 
+  const handleDateChange = (date, dateString) => {
+    setReceivedDate(dateString);
+  };
+
   const handleSubmitForm = async (value) => {
     try {
       let headers = {
@@ -152,9 +169,11 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
           {
             moneyPaid: amountPaid,
             filePdf: currentFile,
+            datesReceived: receivedDate,
           },
           { headers: headers }
         );
+
         if (res.data.status == "success") {
           message.info("Thêm thông tin thành công!");
         } else if (res.data.status === "warning") {
@@ -164,9 +183,9 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
         }
         setCheckUpdateTable(!checkUpdateTable);
       } else if (isNaN(amountPaid)) {
-        message.info("Số tiền đã trả không được nhập ký tự!");
+        message.info("Số tiền nhận không được nhập ký tự!");
       } else {
-        message.info("Số tiền đã trả không được bé hơn 0!");
+        message.info("Số tiền nhận không được bé hơn 0!");
       }
     } catch (error) {
       console.error("Lỗi:", error.message || error);
@@ -275,7 +294,7 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
                       // validator: checkPrice,
 
                       required: true,
-                      message: "Hãy nhập số tiền đã trả!",
+                      message: "Hãy nhập số tiền nhận!",
                     },
                   ]}
                 >
@@ -285,37 +304,23 @@ const DebtMoney = ({ studentId, nameStudent, propLoanChange }) => {
                   />
                 </Form.Item>
 
-                {/* <Form.Item
-                  wrapperCol={{
-                    offset: 8,
-                    span: 16,
-                  }}
+                <Form.Item
+                  label="Ngày thực nhận"
+                  name="receivedDate"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Hãy chọn ngày thực nhận!",
+                    },
+                  ]}
                 >
-                  <Popconfirm
-                    title="Xác nhận thông tin"
-                    onConfirm={() => handleSubmitForm(form.getFieldValue())}
-                    okText="Xác Nhận"
-                    cancelText="Không"
-                  >
-                    <Button danger htmlType="submit">
-                      {" "}
-                      Lưu thông tin
-                    </Button>
-                  </Popconfirm>
-                </Form.Item> */}
+                  <DatePicker
+                    format="DD-MM-YYYY"
+                    style={{ width: "100%" }}
+                    onChange={handleDateChange}
+                  />
+                </Form.Item>
               </Form>
-
-              {/* <div className="mt-3">
-                <Row>
-                  <Col span={8}>Số tiền đã trả </Col>
-                  <Col span={16}>
-                    <InputNumberCustom
-                      number={amountPaid}
-                      setNumber={setAmountPaid}
-                    />
-                  </Col>
-                </Row>
-              </div> */}
 
               <div className="mt-3">
                 <Row>

@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import NumberInput from "../../components/inputNumberAntd";
 import { UploadOutlined } from "@ant-design/icons";
 import { CCol, CContainer, CRow } from "@coreui/react";
- 
+
 function SponsorDetail() {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
@@ -348,7 +348,7 @@ function SponsorDetail() {
           </CRow>
 
           <CRow className="mb-4">
-            <h5>Danh sách Hợp đồng đã ký</h5>
+            <h3>Danh sách hồ sơ góp quỹ</h3>
             <div className="mt-3">
               <Upload {...props} accept=".pdf">
                 <Button icon={<UploadOutlined />}>Chọn file</Button>

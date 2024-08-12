@@ -170,7 +170,7 @@ function TableTaskStudent({ id }) {
 
   return (
     <div className="container mb-3">
-      <h2 className="mt-6 mb-4 text-lg font-semibold">Danh sách công việc</h2>
+      <h3 className="mt-6 mb-4 text-lg font-semibold">Danh sách công việc</h3>
       <Table
         scroll={{ x: true }}
         pagination={{

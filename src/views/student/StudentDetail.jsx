@@ -294,8 +294,8 @@ function StudentDetail() {
             </CCol>
 
             <CCol md={12}>
-              <div className="mb-5">
-                <h5>Danh sách Hợp đồng đã ký</h5>
+              <div className="mb-3 mt-5">
+                <h3>Danh sách hồ sơ xét duyệt học bổng</h3>
                 <div className="mt-3">
                   <Upload {...props} accept=".pdf">
                     <Button icon={<UploadOutlined />}>Chọn file</Button>
